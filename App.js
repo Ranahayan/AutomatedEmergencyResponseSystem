@@ -15,6 +15,7 @@ import {
 } from "@expo-google-fonts/poppins";
 import { Feather } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
+import Welcome from "./Screens/welcome";
 
 export default function App() {
   const Stack = createNativeStackNavigator();
