@@ -1,49 +1,101 @@
 import React, { useState } from "react";
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import colors from "../colors";
 const Welcome = () => {
-  const [registeration, setRegisteration] = useState(false);
-  const textClicked = () => {
-    setRegisteration(true);
+  const [login, setlogin] = useState(true);
+  const [signup, setsignup] = useState(false);
+  const showLogin = () => {
+    setlogin(true);
+    setsignup(false);
+  };
+  const showSignup = () => {
+    setlogin(false);
+    setsignup(true);
   };
   return (
     <View>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-evenly",
-          marginTop: 140,
-        }}
-      >
+      <View style={styles.welcomeText}>
+        <Text style={styles.firstHeading}>Welcome Back</Text>
+        <Text style={styles.secondHeading}>Servers to save lives!</Text>
+      </View>
+      <View style={styles.accountButtons}>
         <View
-          style={{
-            width: 40,
-            borderBottomColor: "black",
-            borderBottomWidth: 2,
-          }}
+          style={
+            login ? styles.showloginFormButton : styles.disableAccountButtons
+          }
         >
-          <Text style={{ marginBottom: 8 }} onPress={textClicked}>
+          <Text
+            style={
+              !login ? styles.disableAccountButtons : styles.accountsButtonColor
+            }
+            onPress={showLogin}
+          >
             Login
           </Text>
         </View>
         <View
-          style={{
-            width: 53,
-            borderBottomColor: "black",
-            borderBottomWidth: 2,
-          }}
+          style={
+            signup ? styles.showSignupFormButton : styles.disableAccountButtons
+          }
         >
-          <Text style={{ marginBottom: 8 }} onPress={textClicked}>
+          <Text
+            style={
+              !signup
+                ? styles.disableAccountButtons
+                : styles.accountsButtonColor
+            }
+            onPress={showSignup}
+          >
             Register
           </Text>
         </View>
       </View>
-      {registeration ? (
-        <Text>Resgieration is true</Text>
-      ) : (
-        <Text>Resgieration is false</Text>
-      )}
+      {login ? <Text>Login Form</Text> : <Text>Signup Form</Text>}
     </View>
   );
 };
 
 export default Welcome;
+
+const styles = StyleSheet.create({
+  welcomeText: {
+    marginTop: 70,
+  },
+  firstHeading: {
+    textAlign: "center",
+    color: colors.grey,
+    fontWeight: "900",
+    fontSize: 30,
+  },
+  secondHeading: {
+    textAlign: "center",
+    color: colors.blue,
+    fontWeight: "800",
+    fontSize: 20,
+    fontStyle: "italic",
+  },
+  accountButtons: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    marginTop: 120,
+  },
+  showloginFormButton: {
+    width: 40,
+    borderBottomColor: colors.blue,
+    borderBottomWidth: 2,
+  },
+  showSignupFormButton: {
+    width: 54,
+    borderBottomColor: colors.blue,
+    borderBottomWidth: 2,
+    fontWeight: "bold",
+  },
+  accountsButtonColor: {
+    color: colors.blue,
+    fontWeight: "900",
+  },
+  disableAccountButtons: {
+    color: colors.grey,
+    marginBottom: 8,
+  },
+});
