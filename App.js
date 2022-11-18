@@ -2,6 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, Button } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import Welcome from "./Screens/welcome";
 import Home from "./Screens/home";
 import Profile from "./Screens/profile";
 import colors from "./Colors/colors";
