@@ -34,9 +34,6 @@ export default function App() {
             headerStyle: {
               backgroundColor: colors.background,
             },
-            headerTitleStyle: {
-              // marginLeft: RFValue(72),
-            },
             headerTintColor: colors.grey,
             headerRight: () => (
               <Feather name="edit-3" size={30} color="black" />
