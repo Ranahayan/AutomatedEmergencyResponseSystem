@@ -2,7 +2,6 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, Button } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Welcome from "./Screens/welcome";
 import Home from "./Screens/home";
 import Profile from "./Screens/profile";
 import colors from "./Colors/colors";
@@ -16,8 +15,9 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import Welcome from "./Screens/welcome";
+import EditProfile from "./Screens/editProfile";
 
-export default function App() {
+export default function App({ navigation }) {
   const Stack = createNativeStackNavigator();
   return (
     <NavigationContainer>
@@ -30,26 +30,33 @@ export default function App() {
         <Stack.Screen
           name="Profile"
           component={Profile}
-          options={{
+          options={({ navigation }) => ({
             title: "Profile",
             headerShadowVisible: false,
             headerStyle: {
               backgroundColor: colors.background,
             },
             headerTintColor: colors.grey,
-            headerRight: () => (
-              <Feather name="edit-3" size={30} color="black" />
-            ),
             headerLeft: () => (
               <Ionicons
                 style={{ marginRight: 20 }}
                 name="arrow-back"
                 size={30}
                 color="#474747"
+                onPress={() => navigation.goBack()}
               />
             ),
-          }}
+            headerRight: () => (
+              <Feather
+                name="edit-3"
+                size={30}
+                color="black"
+                onPress={() => navigation.navigate("Edit Profile")}
+              />
+            ),
+          })}
         />
+        <Stack.Screen name="Edit Profile" component={EditProfile} />
       </Stack.Navigator>
     </NavigationContainer>
   );
