@@ -15,6 +15,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import Welcome from "./Screens/welcome";
+import EditProfile from "./Screens/editProfile";
 
 export default function App({ navigation }) {
   const Stack = createNativeStackNavigator();
@@ -36,9 +37,6 @@ export default function App({ navigation }) {
               backgroundColor: colors.background,
             },
             headerTintColor: colors.grey,
-            headerRight: () => (
-              <Feather name="edit-3" size={30} color="black" />
-            ),
             headerLeft: () => (
               <Ionicons
                 style={{ marginRight: 20 }}
@@ -48,8 +46,17 @@ export default function App({ navigation }) {
                 onPress={() => navigation.goBack()}
               />
             ),
+            headerRight: () => (
+              <Feather
+                name="edit-3"
+                size={30}
+                color="black"
+                onPress={() => navigation.navigate("Edit Profile")}
+              />
+            ),
           })}
         />
+        <Stack.Screen name="Edit Profile" component={EditProfile} />
       </Stack.Navigator>
     </NavigationContainer>
   );

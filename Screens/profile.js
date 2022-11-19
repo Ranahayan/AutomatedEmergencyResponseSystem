@@ -2,7 +2,6 @@ import React from "react";
 import colors from "../Colors/colors";
 import {
   View,
-  Text,
   StatusBar,
   StyleSheet,
   Image,
@@ -51,7 +50,7 @@ const Profile = () => {
             <TextInput
               placeholder="Blood Group"
               style={styles.inputPlaceholder}
-              value="Blood Group"
+              value="O+"
               editable={false}
             />
           </View>
