@@ -2,7 +2,6 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, Button } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Welcome from "./Screens/welcome";
 import Home from "./Screens/home";
 import Profile from "./Screens/profile";
 import colors from "./Colors/colors";
@@ -17,7 +16,7 @@ import { Feather } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import Welcome from "./Screens/welcome";
 
-export default function App() {
+export default function App({ navigation }) {
   const Stack = createNativeStackNavigator();
   return (
     <NavigationContainer>
@@ -30,7 +29,7 @@ export default function App() {
         <Stack.Screen
           name="Profile"
           component={Profile}
-          options={{
+          options={({ navigation }) => ({
             title: "Profile",
             headerShadowVisible: false,
             headerStyle: {
@@ -46,9 +45,10 @@ export default function App() {
                 name="arrow-back"
                 size={30}
                 color="#474747"
+                onPress={() => navigation.goBack()}
               />
             ),
-          }}
+          })}
         />
       </Stack.Navigator>
     </NavigationContainer>
