@@ -1,9 +1,21 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
+import { MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 import colors from "../colors";
 const Welcome = () => {
   const [login, setlogin] = useState(true);
   const [signup, setsignup] = useState(false);
+  const [show, setShow] = useState(true);
   const showLogin = () => {
     setlogin(true);
     setsignup(false);
@@ -12,11 +24,14 @@ const Welcome = () => {
     setlogin(false);
     setsignup(true);
   };
+  const eyeButtonClicked = () => {
+    setShow(!show);
+  };
   return (
     <View>
       <View style={styles.welcomeText}>
         <Text style={styles.firstHeading}>Welcome Back</Text>
-        <Text style={styles.secondHeading}>Servers to save lives!</Text>
+        <Text style={styles.secondHeading}>Serves to save lives!</Text>
       </View>
       <View style={styles.accountButtons}>
         <View
@@ -50,7 +65,44 @@ const Welcome = () => {
           </Text>
         </View>
       </View>
-      {login ? <Text>Login Form</Text> : <Text>Signup Form</Text>}
+      {login ? (
+        <View style={styles.loginForm}>
+          <View style={styles.loginInputs}>
+            <View style={styles.inputFields}>
+              <MaterialCommunityIcons
+                name="email-outline"
+                size={24}
+                color="grey"
+              />
+              <TextInput
+                placeholder="Email Address"
+                style={styles.inputPlaceholder}
+              />
+            </View>
+            <View style={styles.inputFields}>
+              <Feather name="lock" size={24} color="grey" />
+              <TextInput
+                placeholder="Password"
+                style={styles.inputPlaceholder}
+                secureTextEntry={show}
+              />
+              <TouchableOpacity onPress={eyeButtonClicked}>
+                <MaterialCommunityIcons
+                  name={show === false ? "eye" : "eye-off-outline"}
+                  size={28}
+                  color="grey"
+                  style={styles.eyeButton}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <TouchableOpacity style={styles.accountActionButton}>
+            <Text style={styles.accountActionButtonColor}>Login</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <Text>Signup Form</Text>
+      )}
     </View>
   );
 };
@@ -59,7 +111,9 @@ export default Welcome;
 
 const styles = StyleSheet.create({
   welcomeText: {
-    marginTop: 70,
+    marginTop: 120,
+    height: hp("10%"),
+    width: wp("100%"),
   },
   firstHeading: {
     textAlign: "center",
@@ -77,16 +131,17 @@ const styles = StyleSheet.create({
   accountButtons: {
     flexDirection: "row",
     justifyContent: "space-evenly",
-    marginTop: 120,
+    marginTop: "40%",
+    // marginTop: 120,
   },
   showloginFormButton: {
-    width: 40,
-    borderBottomColor: colors.blue,
+    width: wp("10%"),
+    borderBottomColor: "black",
     borderBottomWidth: 2,
   },
   showSignupFormButton: {
-    width: 54,
-    borderBottomColor: colors.blue,
+    width: wp("15%"),
+    borderBottomColor: "black",
     borderBottomWidth: 2,
     fontWeight: "bold",
   },
@@ -97,5 +152,42 @@ const styles = StyleSheet.create({
   disableAccountButtons: {
     color: colors.grey,
     marginBottom: 8,
+  },
+  loginForm: {
+    flexDirection: "column",
+    alignItems: "center",
+    marginTop: "10%",
+  },
+  loginInputs: {
+    flexDirection: "column",
+    justifyContent: "space-evenly",
+    height: hp("20%"),
+  },
+  inputFields: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: wp("80%"),
+    borderBottomColor: "grey",
+    borderBottomWidth: 1,
+  },
+  inputPlaceholder: {
+    fontSize: 18,
+    marginLeft: 5,
+  },
+  eyeButton: {
+    marginLeft: "65%",
+  },
+  accountActionButton: {
+    backgroundColor: colors.blue,
+    width: wp("80%"),
+    height: hp("6%"),
+    borderRadius: 20,
+    marginTop: 50,
+  },
+  accountActionButtonColor: {
+    color: "white",
+    textAlign: "center",
+    fontWeight: "bold",
+    lineHeight: hp("6%"),
   },
 });
