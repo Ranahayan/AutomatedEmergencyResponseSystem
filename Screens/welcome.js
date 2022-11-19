@@ -11,11 +11,13 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { MaterialCommunityIcons, Feather } from "@expo/vector-icons";
-import colors from "../Colors/colors";
+import colors from "../colors";
 const Welcome = () => {
   const [login, setlogin] = useState(true);
   const [signup, setsignup] = useState(false);
   const [show, setShow] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const showLogin = () => {
     setlogin(true);
     setsignup(false);
@@ -27,83 +29,100 @@ const Welcome = () => {
   const eyeButtonClicked = () => {
     setShow(!show);
   };
+
+  const loginSubmit = () => {
+    console.log(email);
+    console.log(password);
+  };
+
   return (
-    <View>
-      <View style={styles.welcomeText}>
-        <Text style={styles.firstHeading}>Welcome Back</Text>
-        <Text style={styles.secondHeading}>Serves to save lives!</Text>
-      </View>
-      <View style={styles.accountButtons}>
-        <View
-          style={
-            login ? styles.showloginFormButton : styles.disableAccountButtons
-          }
-        >
-          <Text
-            style={
-              !login ? styles.disableAccountButtons : styles.accountsButtonColor
-            }
-            onPress={showLogin}
-          >
-            Login
-          </Text>
+    <KeyBoardAvoidingWrapper>
+      <View>
+        <View style={styles.welcomeText}>
+          <Text style={styles.firstHeading}>Welcome Back</Text>
+          <Text style={styles.secondHeading}>Serves to save lives!</Text>
         </View>
-        <View
-          style={
-            signup ? styles.showSignupFormButton : styles.disableAccountButtons
-          }
-        >
-          <Text
+        <View style={styles.accountButtons}>
+          <View
             style={
-              !signup
-                ? styles.disableAccountButtons
-                : styles.accountsButtonColor
+              login ? styles.showloginFormButton : styles.disableAccountButtons
             }
-            onPress={showSignup}
           >
-            Register
-          </Text>
-        </View>
-      </View>
-      {login ? (
-        <View style={styles.loginForm}>
-          <View style={styles.loginInputs}>
-            <View style={styles.inputFields}>
-              <MaterialCommunityIcons
-                name="email-outline"
-                size={24}
-                color="grey"
-              />
-              <TextInput
-                placeholder="Email Address"
-                style={styles.inputPlaceholder}
-              />
-            </View>
-            <View style={styles.inputFields}>
-              <Feather name="lock" size={24} color="grey" />
-              <TextInput
-                placeholder="Password"
-                style={styles.inputPlaceholder}
-                secureTextEntry={show}
-              />
-              <TouchableOpacity onPress={eyeButtonClicked}>
-                <MaterialCommunityIcons
-                  name={show === false ? "eye" : "eye-off-outline"}
-                  size={28}
-                  color="grey"
-                  style={styles.eyeButton}
-                />
-              </TouchableOpacity>
-            </View>
+            <Text
+              style={
+                !login
+                  ? styles.disableAccountButtons
+                  : styles.accountsButtonColor
+              }
+              onPress={showLogin}
+            >
+              Login
+            </Text>
           </View>
-          <TouchableOpacity style={styles.accountActionButton}>
-            <Text style={styles.accountActionButtonColor}>Login</Text>
-          </TouchableOpacity>
+          <View
+            style={
+              signup
+                ? styles.showSignupFormButton
+                : styles.disableAccountButtons
+            }
+          >
+            <Text
+              style={
+                !signup
+                  ? styles.disableAccountButtons
+                  : styles.accountsButtonColor
+              }
+              onPress={showSignup}
+            >
+              Register
+            </Text>
+          </View>
         </View>
-      ) : (
-        <Text>Signup Form</Text>
-      )}
-    </View>
+        {login ? (
+          <View style={styles.loginForm}>
+            <View style={styles.loginInputs}>
+              <View style={styles.inputFields}>
+                <MaterialCommunityIcons
+                  name="email-outline"
+                  size={24}
+                  color="grey"
+                />
+                <TextInput
+                  placeholder="Email Address"
+                  style={styles.inputPlaceholder}
+                  onChangeText={(value) => setEmail(value)}
+                />
+              </View>
+              <View style={styles.inputFields}>
+                <Feather name="lock" size={24} color="grey" />
+                <TextInput
+                  placeholder="Password"
+                  style={styles.inputPlaceholder}
+                  secureTextEntry={show}
+                  onChangeText={(value) => setPassword(value)}
+                />
+                <TouchableOpacity onPress={eyeButtonClicked}>
+                  <MaterialCommunityIcons
+                    name={show === false ? "eye" : "eye-off-outline"}
+                    size={28}
+                    color="grey"
+                    style={styles.eyeButton}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+            <TouchableOpacity
+              style={styles.accountActionButton}
+              onPress={loginSubmit}
+            >
+              <Text style={styles.accountActionButtonColor}>Login</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <Text>Signup Form</Text>
+        )}
+      </View>
+    </KeyBoardAvoidingWrapper>
   );
 };
 
