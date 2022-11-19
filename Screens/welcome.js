@@ -11,7 +11,10 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { MaterialCommunityIcons, Feather } from "@expo/vector-icons";
+
+import KeyBoardAvoidingWrapper from "../keyboardAvoidingWrapper";
 import colors from "../Colors/colors";
+
 const Welcome = () => {
   const [login, setlogin] = useState(true);
   const [signup, setsignup] = useState(false);
@@ -97,7 +100,7 @@ const Welcome = () => {
                 <Feather name="lock" size={24} color="grey" />
                 <TextInput
                   placeholder="Password"
-                  style={styles.inputPlaceholder}
+                  style={styles.passwordInput}
                   secureTextEntry={show}
                   onChangeText={(value) => setPassword(value)}
                 />
@@ -106,7 +109,6 @@ const Welcome = () => {
                     name={show === false ? "eye" : "eye-off-outline"}
                     size={28}
                     color="grey"
-                    style={styles.eyeButton}
                   />
                 </TouchableOpacity>
               </View>
@@ -192,10 +194,14 @@ const styles = StyleSheet.create({
   inputPlaceholder: {
     fontSize: 18,
     marginLeft: 5,
+    width: "90%",
   },
-  eyeButton: {
-    marginLeft: "65%",
+  passwordInput: {
+    fontSize: 18,
+    marginLeft: 5,
+    width: "80%",
   },
+
   accountActionButton: {
     backgroundColor: colors.blue,
     width: wp("80%"),
