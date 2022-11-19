@@ -56,7 +56,27 @@ export default function App({ navigation }) {
             ),
           })}
         />
-        <Stack.Screen name="Edit Profile" component={EditProfile} />
+        <Stack.Screen
+          name="Edit Profile"
+          component={EditProfile}
+          options={({ navigation }) => ({
+            title: "Edit Profile",
+            headerShadowVisible: false,
+            headerStyle: {
+              backgroundColor: colors.background,
+            },
+            headerTintColor: colors.grey,
+            headerLeft: () => (
+              <Ionicons
+                style={{ marginRight: 20 }}
+                name="arrow-back"
+                size={30}
+                color="#474747"
+                onPress={() => navigation.goBack()}
+              />
+            ),
+          })}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

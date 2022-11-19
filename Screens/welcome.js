@@ -11,7 +11,7 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { MaterialCommunityIcons, Feather } from "@expo/vector-icons";
-import colors from "../colors";
+import colors from "../Colors/colors";
 const Welcome = () => {
   const [login, setlogin] = useState(true);
   const [signup, setsignup] = useState(false);
