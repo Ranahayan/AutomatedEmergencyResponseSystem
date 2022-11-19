@@ -11,8 +11,8 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { MaterialCommunityIcons, Feather } from "@expo/vector-icons";
-
 import KeyBoardAvoidingWrapper from "../keyboardAvoidingWrapper";
+import Register from "./Register";
 import colors from "../Colors/colors";
 
 const Welcome = () => {
@@ -121,7 +121,10 @@ const Welcome = () => {
             </TouchableOpacity>
           </View>
         ) : (
-          <Text>Signup Form</Text>
+          <Register
+            accountActionButtonColor={styles.accountActionButtonColor}
+            accountActionButton={styles.accountActionButton}
+          />
         )}
       </View>
     </KeyBoardAvoidingWrapper>
