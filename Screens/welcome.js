@@ -151,7 +151,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-evenly",
     marginTop: "40%",
-    // marginTop: 120,
   },
   showloginFormButton: {
     width: wp("10%"),
