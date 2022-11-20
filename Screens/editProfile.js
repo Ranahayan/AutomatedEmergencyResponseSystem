@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
   },
   appButtonCancel: {
     borderRadius: 30,
-    paddingVertical: 10,
+    paddingVertical: 6,
     paddingHorizontal: 12,
     borderColor: colors.grey,
     borderWidth: 2,
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   appButtonSave: {
     backgroundColor: "#0165FF",
     borderRadius: 10,
-    paddingVertical: 10,
+    paddingVertical: 6,
     paddingHorizontal: 12,
     marginRight: 10,
     borderRadius: 30,
