@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import colors from "../Colors/colors";
 import {
   View,
@@ -23,7 +23,44 @@ import {
   Entypo,
 } from "@expo/vector-icons";
 import KeyBoardAvoidingWrapper from "../keyboardAvoidingWrapper";
-const EditProfile = () => {
+const IndividualContact = () => {
+  const [contacts, setContacts] = useState([
+    {
+      key: 1,
+      name: "Hayan",
+      number: "03142567710",
+      email: "abdulhayan1220@gmail.com",
+      address: "Lahore",
+    },
+    {
+      key: 2,
+      name: "faisal",
+      number: "03142523510",
+      email: "faisal123@gmail.com",
+      address: "okara",
+    },
+    {
+      key: 3,
+      name: "ehtsham",
+      number: "03106767710",
+      email: "ehtsham876@gmail.com",
+      address: "pasroor",
+    },
+    {
+      key: 4,
+      name: "Dansih",
+      number: "03142501710",
+      email: "Dansih975@gmail.com",
+      address: "Hafizabad",
+    },
+    {
+      key: 5,
+      name: "ehtsham",
+      number: "03106767710",
+      email: "ehtsham876@gmail.com",
+      address: "pasroor",
+    },
+  ]);
   return (
     <KeyBoardAvoidingWrapper>
       <View style={styles.container}>
@@ -41,81 +78,6 @@ const EditProfile = () => {
                 <TextInput placeholder="Name" style={styles.inputPlaceholder} />
               </View>
             </View>
-            <View style={styles.individualInput}>
-              <View style={styles.icon}>
-                <Entypo name="address" size={35} color={colors.grey} />
-              </View>
-
-              <View style={styles.inputFields}>
-                <TextInput
-                  placeholder="Address"
-                  style={styles.inputPlaceholder}
-                />
-              </View>
-            </View>
-            <View style={styles.individualInput}>
-              <View style={styles.icon}>
-                <FontAwesome name="genderless" size={35} color={colors.grey} />
-              </View>
-              <View style={styles.inputFields}>
-                <TextInput
-                  placeholder="Gender"
-                  style={styles.inputPlaceholder}
-                />
-              </View>
-            </View>
-
-            <View style={styles.individualInput}>
-              <View style={styles.icon}>
-                <Fontisto name="blood-drop" size={35} color={colors.grey} />
-              </View>
-              <View style={styles.inputFields}>
-                <TextInput
-                  placeholder="Blood Group"
-                  style={styles.inputPlaceholder}
-                />
-              </View>
-            </View>
-
-            <View style={styles.individualInput}>
-              <View style={styles.icon}>
-                <MaterialCommunityIcons
-                  name="email-outline"
-                  size={35}
-                  color={colors.grey}
-                />
-              </View>
-              <View style={styles.inputFields}>
-                <TextInput
-                  placeholder="Email Address"
-                  style={styles.inputPlaceholder}
-                />
-              </View>
-            </View>
-
-            <View style={styles.individualInput}>
-              <View style={styles.icon}>
-                <MaterialCommunityIcons
-                  name="key-outline"
-                  size={35}
-                  color={colors.grey}
-                />
-              </View>
-              <View style={styles.inputFields}>
-                <TextInput
-                  placeholder="Password"
-                  style={styles.inputPlaceholder}
-                />
-              </View>
-            </View>
-          </View>
-          <View style={styles.buttons}>
-            <TouchableOpacity style={styles.appButtonCancel}>
-              <Text style={styles.appInButtonCancel}>Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.appButtonSave}>
-              <Text style={styles.appInButtonSave}>Save</Text>
-            </TouchableOpacity>
           </View>
         </View>
         <StatusBar style="auto" />
@@ -127,6 +89,7 @@ const EditProfile = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexDirection: "column",
     backgroundColor: colors.background,
     alignItems: "center",
     justifyContent: "center",
@@ -204,4 +167,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EditProfile;
+export default IndividualContact;

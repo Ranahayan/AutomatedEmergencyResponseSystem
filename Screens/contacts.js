@@ -8,6 +8,7 @@ import {
   TextInput,
   Text,
   FlatList,
+  TouchableOpacity,
 } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -15,34 +16,66 @@ import {
 } from "react-native-responsive-screen";
 import { MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 
-const Contact = () => {
+const Contact = ({ navigation }) => {
   const [contacts, setContacts] = useState([
     {
+      key: 1,
       name: "Hayan",
       number: "03142567710",
       email: "abdulhayan1220@gmail.com",
       address: "Lahore",
     },
     {
+      key: 2,
       name: "faisal",
       number: "03142523510",
       email: "faisal123@gmail.com",
       address: "okara",
     },
     {
+      key: 3,
       name: "ehtsham",
       number: "03106767710",
       email: "ehtsham876@gmail.com",
       address: "pasroor",
     },
     {
+      key: 4,
       name: "Dansih",
       number: "03142501710",
       email: "Dansih975@gmail.com",
       address: "Hafizabad",
     },
+    {
+      key: 5,
+      name: "ehtsham",
+      number: "03106767710",
+      email: "ehtsham876@gmail.com",
+      address: "pasroor",
+    },
   ]);
-  const name = "hayan";
+  const renderContact = ({ item }) => (
+    <TouchableOpacity
+      onPress={() => {
+        console.log("first");
+        navigation.navigate("Individual Contact");
+      }}
+    >
+      <View style={styles.inputFields}>
+        <View style={styles.nameInitial}>
+          <Text style={styles.nameInitialText}>
+            {item.name.charAt(0).toUpperCase()}
+          </Text>
+        </View>
+        <TextInput
+          placeholder="Name"
+          style={styles.inputPlaceholder}
+          value={item.name.charAt(0).toUpperCase() + item.name.slice(1)}
+          editable={false}
+        />
+      </View>
+    </TouchableOpacity>
+  );
   return (
     <View style={styles.container}>
       <Image
@@ -53,35 +86,9 @@ const Contact = () => {
         <View style={styles.profileInputs}>
           <FlatList
             data={contacts}
-            renderItem={({ item }) => (
-              <View style={styles.inputFields}>
-                <View style={styles.nameInitial}>
-                  <Text style={styles.nameInitialText}>
-                    {item.name.charAt(0).toUpperCase()}
-                  </Text>
-                </View>
-                <TextInput
-                  placeholder="Name"
-                  style={styles.inputPlaceholder}
-                  value={item.name.charAt(0).toUpperCase() + item.name.slice(1)}
-                  editable={false}
-                />
-              </View>
-            )}
+            showsVerticalScrollIndicator={false}
+            renderItem={renderContact}
           />
-          {/* <View style={styles.inputFields}>
-            <View style={styles.nameInitial}>
-              <Text style={styles.nameInitialText}>
-                {name.charAt(0).toUpperCase()}
-              </Text>
-            </View>
-            <TextInput
-              placeholder="Name"
-              style={styles.inputPlaceholder}
-              value={name.charAt(0).toUpperCase() + name.slice(1)}
-              editable={false}
-            />
-          </View> */}
         </View>
       </View>
       <StatusBar style="auto" />
@@ -101,11 +108,13 @@ const styles = StyleSheet.create({
     width: wp("38%"),
   },
   profileForm: {
+    flex: 1,
     flexDirection: "column",
     alignItems: "center",
     marginTop: "10%",
   },
   profileInputs: {
+    flex: 1,
     flexDirection: "column",
     justifyContent: "space-evenly",
   },

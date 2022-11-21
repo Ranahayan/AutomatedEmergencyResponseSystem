@@ -12,10 +12,11 @@ import {
   Poppins_500Medium_Italic,
   Poppins_600SemiBold,
 } from "@expo-google-fonts/poppins";
-import { FontAwesome5, AntDesign, Ionicons,Feather } from "@expo/vector-icons";
+import { FontAwesome5, AntDesign, Ionicons, Feather } from "@expo/vector-icons";
 import Welcome from "./Screens/welcome";
 import EditProfile from "./Screens/editProfile";
 import Contact from "./Screens/contacts";
+import IndividualContact from "./Screens/individualScreen";
 
 export default function App({ navigation }) {
   const Stack = createNativeStackNavigator();
@@ -112,6 +113,28 @@ export default function App({ navigation }) {
                   onPress={() => navigation.navigate("Edit Profile")}
                 />
               </View>
+            ),
+          })}
+        />
+        <Stack.Screen
+          name="Individual Contact"
+          component={IndividualContact}
+          options={({ navigation }) => ({
+            title: "Edit Profile",
+            headerBackTitleVisible: false,
+            headerShadowVisible: false,
+            headerStyle: {
+              backgroundColor: colors.background,
+            },
+            headerTintColor: colors.grey,
+            headerLeft: () => (
+              <Ionicons
+                style={{ marginRight: 20 }}
+                name="arrow-back"
+                size={30}
+                color="#474747"
+                onPress={() => navigation.goBack()}
+              />
             ),
           })}
         />
