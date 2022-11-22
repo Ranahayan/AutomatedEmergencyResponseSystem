@@ -16,7 +16,7 @@ import { FontAwesome5, AntDesign, Ionicons, Feather } from "@expo/vector-icons";
 import Welcome from "./Screens/welcome";
 import EditProfile from "./Screens/editProfile";
 import Contact from "./Screens/contacts";
-import IndividualContact from "./Screens/individualScreen";
+import IndividualContact from "./Screens/individualContact";
 
 export default function App({ navigation }) {
   const Stack = createNativeStackNavigator();
@@ -120,8 +120,7 @@ export default function App({ navigation }) {
           name="Individual Contact"
           component={IndividualContact}
           options={({ navigation }) => ({
-            title: "Edit Profile",
-            headerBackTitleVisible: false,
+            title: "",
             headerShadowVisible: false,
             headerStyle: {
               backgroundColor: colors.background,
@@ -134,6 +133,16 @@ export default function App({ navigation }) {
                 size={30}
                 color="#474747"
                 onPress={() => navigation.goBack()}
+              />
+            ),
+            headerRight: () => (
+              <Feather
+                name="edit-3"
+                size={30}
+                color="black"
+                onPress={() =>
+                  navigation.navigate("Individual Contact", { editFlag: true })
+                }
               />
             ),
           })}

@@ -58,7 +58,7 @@ const Contact = ({ navigation }) => {
     <TouchableOpacity
       onPress={() => {
         console.log("first");
-        navigation.navigate("Individual Contact");
+        navigation.navigate("Individual Contact", { constactId: item.key });
       }}
     >
       <View style={styles.inputFields}>
