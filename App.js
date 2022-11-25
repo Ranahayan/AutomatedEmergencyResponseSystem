@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Button } from "react-native";
+import { StyleSheet, Text, View, Button, TouchableOpacity } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Home from "./Screens/home";
@@ -17,6 +17,7 @@ import Welcome from "./Screens/welcome";
 import EditProfile from "./Screens/editProfile";
 import Contact from "./Screens/contacts";
 import IndividualContact from "./Screens/individualContact";
+import CreateContact from "./Screens/createContact";
 
 export default function App({ navigation }) {
   const Stack = createNativeStackNavigator();
@@ -99,19 +100,19 @@ export default function App({ navigation }) {
             ),
             headerRight: () => (
               <View style={styles.headerRightIcons}>
-                <FontAwesome5
-                  name="search"
-                  style={{ marginRight: 20 }}
-                  size={27}
-                  color="#474747"
-                  onPress={() => navigation.goBack()}
-                />
-                <AntDesign
-                  name="adduser"
-                  size={32}
-                  color="#474747"
-                  onPress={() => navigation.navigate("Edit Profile")}
-                />
+                <TouchableOpacity>
+                  <FontAwesome5
+                    name="search"
+                    style={{ marginRight: 20 }}
+                    size={27}
+                    color="#474747"
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("Create Contact")}
+                >
+                  <AntDesign name="adduser" size={32} color="#474747" />
+                </TouchableOpacity>
               </View>
             ),
           })}
@@ -136,13 +137,35 @@ export default function App({ navigation }) {
               />
             ),
             headerRight: () => (
-              <Feather
-                name="edit-3"
-                size={30}
-                color="black"
+              <TouchableOpacity
                 onPress={() =>
-                  navigation.navigate("Individual Contact", { editFlag: true })
+                  navigation.navigate("Individual Contact", {
+                    editFlag: true,
+                  })
                 }
+              >
+                <Feather name="edit-3" size={30} color="black" />
+              </TouchableOpacity>
+            ),
+          })}
+        />
+        <Stack.Screen
+          name="Create Contact"
+          component={CreateContact}
+          options={({ navigation }) => ({
+            title: "Create Contact",
+            headerStyle: {
+              backgroundColor: colors.background,
+            },
+            headerShadowVisible: false,
+            headerTintColor: colors.grey,
+            headerLeft: () => (
+              <Ionicons
+                style={{ marginRight: 20 }}
+                name="arrow-back"
+                size={30}
+                color="#474747"
+                onPress={() => navigation.goBack()}
               />
             ),
           })}

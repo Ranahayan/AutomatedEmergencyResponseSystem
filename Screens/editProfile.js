@@ -7,8 +7,6 @@ import {
   Image,
   TextInput,
   Text,
-  Keyboard,
-  TouchableWithoutFeedback,
   TouchableOpacity,
 } from "react-native";
 import {

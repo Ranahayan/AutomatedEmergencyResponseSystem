@@ -15,9 +15,15 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+const Joi = require("joi");
 
-const IndividualContact = ({ navigation, route }) => {
-  const { constactId, editFlag } = route.params;
+const CreateContact = ({ navigation, route }) => {
+  const [name, setName] = useState("");
+  const [number, setNumber] = useState("");
+  const [address, setAddress] = useState("");
+  const [email, setEmail] = useState("");
+  const [errors, setErrors] = useState({});
+
   const [contacts, setContacts] = useState([
     {
       key: 1,
@@ -56,16 +62,72 @@ const IndividualContact = ({ navigation, route }) => {
     },
   ]);
 
-  const [contact, setContact] = useState({});
-  const [edit, setEdit] = useState(false);
-  useEffect(() => {
-    const contact = contacts.find((contact) => contact.key === constactId);
-    setContact(contact);
-  }, []);
+  const handleName = (val) => {
+    console.log(val);
+    setName(val);
+  };
 
-  useEffect(() => {
-    editFlag && setEdit(true);
-  }, [editFlag]);
+  const handleNumber = (value) => {
+    setNumber(value);
+  };
+
+  const handleAddress = (value) => {
+    setAddress(value);
+  };
+
+  const handleEmail = (value) => {
+    setEmail(value);
+  };
+
+  const schema = Joi.object({
+    name: Joi.string().min(3).required(),
+    number: Joi.string().min(11).max(11).required(),
+    address: Joi.string().min(3).required(),
+    email: Joi.string().email({
+      minDomainSegments: 2,
+      tlds: { allow: ["com", "net"] },
+    }),
+  });
+
+  const submitContact = () => {
+    const contact = {
+      name,
+      number,
+      address,
+      email,
+    };
+    contact.key =
+      Math.random().toString(36).substring(2) +
+      new Date().getTime().toString(36);
+
+    const contactList = [...contacts, contact];
+    setContacts(contactList);
+  };
+
+  const handleContact = () => {
+    const errors = handleErrors();
+    setErrors(errors);
+    if (errors) return;
+    submitContact();
+  };
+
+  const handleErrors = () => {
+    const contact = {
+      name,
+      number,
+      address,
+      email,
+    };
+    const { error } = schema.validate(contact, {
+      abortEarly: false,
+    });
+    if (!error) return null;
+    const errors = {};
+    for (let item of error.details) {
+      errors[item.path[0]] = item.message;
+    }
+    return errors;
+  };
 
   return (
     <KeyBoardAvoidingWrapper>
@@ -75,27 +137,19 @@ const IndividualContact = ({ navigation, route }) => {
           source={require("../assets/edit-user.png")}
         />
         <View style={styles.profileForm}>
-          {!edit && (
-            <Text style={styles.mainName}>
-              {String(contact.name).charAt(0).toUpperCase() +
-                String(contact.name).slice(1)}
-            </Text>
-          )}
           <View style={styles.profileInputs}>
-            {edit && (
-              <View style={styles.inputFields}>
-                <View style={styles.icon}>
-                  <Feather name="user" size={30} color={colors.grey} />
-                </View>
-                <TextInput
-                  placeholder="Name"
-                  style={styles.inputPlaceholder}
-                  value={contact.name}
-                  editable={edit ? true : false}
-                  autoFocus={true}
-                />
+            <View style={styles.inputFields}>
+              <View style={styles.icon}>
+                <Feather name="user" size={30} color={colors.grey} />
               </View>
-            )}
+              <TextInput
+                placeholder="Name"
+                style={styles.inputPlaceholder}
+                autoFocus={true}
+                value={name}
+                onChangeText={handleName}
+              />
+            </View>
             <View style={styles.inputFields}>
               <View style={styles.icon}>
                 <Ionicons name="call-outline" size={30} color={colors.grey} />
@@ -103,8 +157,8 @@ const IndividualContact = ({ navigation, route }) => {
               <TextInput
                 placeholder="Number"
                 style={styles.inputPlaceholder}
-                value={contact.number}
-                editable={edit ? true : false}
+                value={number}
+                onChangeText={handleNumber}
               />
             </View>
             <View style={styles.inputFields}>
@@ -118,8 +172,8 @@ const IndividualContact = ({ navigation, route }) => {
               <TextInput
                 placeholder="Address"
                 style={styles.inputPlaceholder}
-                value={contact.address}
-                editable={edit ? true : false}
+                value={address}
+                onChangeText={handleAddress}
               />
             </View>
             <View style={styles.inputFields}>
@@ -129,22 +183,24 @@ const IndividualContact = ({ navigation, route }) => {
               <TextInput
                 placeholder="Email"
                 style={styles.inputPlaceholder}
-                value={contact.email}
                 multiline={true}
-                editable={edit ? true : false}
+                value={email}
+                onChangeText={handleEmail}
               />
             </View>
           </View>
-          {edit && (
-            <View style={styles.buttons}>
-              <TouchableOpacity style={styles.appButtonCancel}>
-                <Text style={styles.appInButtonCancel}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.appButtonSave}>
-                <Text style={styles.appInButtonSave}>Save</Text>
-              </TouchableOpacity>
-            </View>
-          )}
+
+          <View style={styles.buttons}>
+            <TouchableOpacity style={styles.appButtonCancel}>
+              <Text style={styles.appInButtonCancel}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.appButtonSave}
+              onPress={handleContact}
+            >
+              <Text style={styles.appInButtonSave}>Save</Text>
+            </TouchableOpacity>
+          </View>
         </View>
         <StatusBar style="auto" />
       </View>
@@ -235,4 +291,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default IndividualContact;
+export default CreateContact;
