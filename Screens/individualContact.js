@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, memo } from "react";
 import colors from "../Colors/colors";
 import { Feather, Ionicons, AntDesign } from "@expo/vector-icons";
 import KeyBoardAvoidingWrapper from "../keyboardAvoidingWrapper";
@@ -16,45 +16,8 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 
-const IndividualContact = ({ navigation, route }) => {
+const IndividualContact = ({ navigation, route, contacts }) => {
   const { constactId, editFlag } = route.params;
-  const [contacts, setContacts] = useState([
-    {
-      key: 1,
-      name: "Hayan",
-      number: "03142567710",
-      email: "bjbnhkh12hv20@gmail.com",
-      address: "Lahore",
-    },
-    {
-      key: 2,
-      name: "faisal",
-      number: "03142523510",
-      email: "faisal123@gmail.com",
-      address: "okara",
-    },
-    {
-      key: 3,
-      name: "ehtsham",
-      number: "03106767710",
-      email: "ehtsham876@gmail.com",
-      address: "pasroor",
-    },
-    {
-      key: 4,
-      name: "Dansih",
-      number: "03142501710",
-      email: "Dansih975@gmail.com",
-      address: "Hafizabad",
-    },
-    {
-      key: 5,
-      name: "ehtsham",
-      number: "03106767710",
-      email: "ehtsham876@gmail.com",
-      address: "pasroor",
-    },
-  ]);
 
   const [contact, setContact] = useState({});
   const [edit, setEdit] = useState(false);
@@ -235,4 +198,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default IndividualContact;
+export default memo(IndividualContact);
