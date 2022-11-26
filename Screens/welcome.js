@@ -5,6 +5,8 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Modal,
+  Switch,
 } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -12,8 +14,8 @@ import {
 } from "react-native-responsive-screen";
 import { MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 import KeyBoardAvoidingWrapper from "../keyboardAvoidingWrapper";
+import colors from "../colors";
 import Register from "./Register";
-import colors from "../Colors/colors";
 
 const Welcome = () => {
   const [login, setlogin] = useState(true);
@@ -21,6 +23,8 @@ const Welcome = () => {
   const [show, setShow] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showpopup, setShowpopup] = useState(false);
+  const [switchvalue, setSwitchvalue] = useState(false);
   const showLogin = () => {
     setlogin(true);
     setsignup(false);
@@ -32,10 +36,16 @@ const Welcome = () => {
   const eyeButtonClicked = () => {
     setShow(!show);
   };
+  const toggleSwitch = (value) => {
+    console.log("value of toggle button", value);
+    setSwitchvalue(value);
+    setShowpopup(false);
+  };
 
   const loginSubmit = () => {
     console.log(email);
     console.log(password);
+    setShowpopup(!showpopup);
   };
 
   return (
@@ -119,6 +129,19 @@ const Welcome = () => {
             >
               <Text style={styles.accountActionButtonColor}>Login</Text>
             </TouchableOpacity>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={showpopup}
+              onRequestClose={() => {}}
+            >
+              <View style={styles.popupContainer}>
+                <View style={styles.popupContent}>
+                  <Text>Enable Accident Detection</Text>
+                  <Switch onValueChange={toggleSwitch} value={switchvalue} />
+                </View>
+              </View>
+            </Modal>
           </View>
         ) : (
           <Register
@@ -156,6 +179,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-evenly",
     marginTop: "40%",
+    // marginTop: 120,
   },
   showloginFormButton: {
     width: wp("10%"),
@@ -216,5 +240,21 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: "bold",
     lineHeight: hp("6%"),
+  },
+  popupContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
+  popupContent: {
+    width: wp("80%"),
+    height: hp("10%"),
+    marginBottom: 90,
+    borderRadius: 30,
+    backgroundColor: "#fff",
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+    elevation: 5,
   },
 });
