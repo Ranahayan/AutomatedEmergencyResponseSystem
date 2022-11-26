@@ -14,7 +14,7 @@ import {
 } from "react-native-responsive-screen";
 import { MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 import KeyBoardAvoidingWrapper from "../keyboardAvoidingWrapper";
-import colors from "../colors";
+import colors from "../Colors/colors";
 import Register from "./Register";
 
 const Welcome = () => {
@@ -147,6 +147,9 @@ const Welcome = () => {
           <Register
             accountActionButtonColor={styles.accountActionButtonColor}
             accountActionButton={styles.accountActionButton}
+            inputFields={styles.inputFields}
+            passwordInput={styles.passwordInput}
+            inputPlaceholder={styles.inputPlaceholder}
           />
         )}
       </View>
@@ -178,8 +181,7 @@ const styles = StyleSheet.create({
   accountButtons: {
     flexDirection: "row",
     justifyContent: "space-evenly",
-    marginTop: "40%",
-    // marginTop: 120,
+    marginTop: "20%",
   },
   showloginFormButton: {
     width: wp("10%"),
@@ -249,7 +251,7 @@ const styles = StyleSheet.create({
   popupContent: {
     width: wp("80%"),
     height: hp("10%"),
-    marginBottom: 90,
+    marginBottom: "45%",
     borderRadius: 30,
     backgroundColor: "#fff",
     flexDirection: "row",
