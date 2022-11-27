@@ -7,7 +7,6 @@ import Profile from "./Screens/profile";
 import colors from "./Colors/colors";
 import { FontAwesome5, AntDesign, Ionicons, Feather } from "@expo/vector-icons";
 import Welcome from "./Screens/welcome";
-import EditProfile from "./Screens/editProfile";
 import Contact from "./Screens/contacts";
 import IndividualContact from "./Screens/individualContact";
 import CreateContact from "./Screens/createContact";
@@ -132,30 +131,7 @@ export default function App({ navigation }) {
             />
           )}
         </Stack.Screen>
-        {/* -----------------------------------------------------------Ediet Profile ----------------------------------------------------------- */}
 
-        <Stack.Screen
-          name="Edit Profile"
-          component={EditProfile}
-          options={({ navigation }) => ({
-            title: "Edit Profile",
-            headerShadowVisible: false,
-            headerStyle: {
-              backgroundColor: colors.background,
-            },
-            headerTintColor: colors.grey,
-            headerLeft: () => (
-              <TouchableOpacity onPress={() => navigation.goBack()}>
-                <Ionicons
-                  style={{ marginRight: 20 }}
-                  name="arrow-back"
-                  size={30}
-                  color="#474747"
-                />
-              </TouchableOpacity>
-            ),
-          })}
-        />
         {/* -----------------------------------------------------------Contacts----------------------------------------------------------- */}
 
         <Stack.Screen
