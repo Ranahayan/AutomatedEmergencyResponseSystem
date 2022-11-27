@@ -14,7 +14,9 @@ import CreateContact from "./Screens/createContact";
 import { useState } from "react";
 
 export default function App({ navigation }) {
-  const [editFlag, setEditFlag] = useState(false);
+  const [editContactFlag, setEditFlag] = useState(false);
+  const [editProfileFlag, setEditprofileFlag] = useState(false);
+
   const [contacts, setContacts] = useState([
     {
       key: 1,
@@ -52,7 +54,13 @@ export default function App({ navigation }) {
       address: "pasroor",
     },
   ]);
-
+  const [user, setUser] = useState({
+    name: "Hayan",
+    address: "Lahore",
+    gender: "Male",
+    bloodGroup: "O+",
+    email: "abdulhayan1220@gmail.com",
+  });
   const handleAddContact = (contact) => {
     const contactList = [...contacts, contact];
     setContacts(contactList);
@@ -80,7 +88,6 @@ export default function App({ navigation }) {
 
         <Stack.Screen
           name="Profile"
-          component={Profile}
           options={({ navigation }) => ({
             title: "Profile",
             headerShadowVisible: false,
@@ -89,24 +96,42 @@ export default function App({ navigation }) {
             },
             headerTintColor: colors.grey,
             headerLeft: () => (
-              <Ionicons
-                style={{ marginRight: 20 }}
-                name="arrow-back"
-                size={30}
-                color="#474747"
-                onPress={() => navigation.goBack()}
-              />
+              <TouchableOpacity
+                onPress={() => {
+                  setEditprofileFlag(false);
+                  navigation.goBack();
+                }}
+              >
+                <Ionicons
+                  style={{ marginRight: 20 }}
+                  name="arrow-back"
+                  size={30}
+                  color="#474747"
+                />
+              </TouchableOpacity>
             ),
             headerRight: () => (
-              <Feather
-                name="edit-3"
-                size={30}
-                color="black"
-                onPress={() => navigation.navigate("Edit Profile")}
-              />
+              <TouchableOpacity>
+                <Feather
+                  name="edit-3"
+                  size={30}
+                  color="black"
+                  onPress={() => setEditprofileFlag(true)}
+                />
+              </TouchableOpacity>
             ),
           })}
-        />
+        >
+          {(props) => (
+            <Profile
+              {...props}
+              user={user}
+              editProfileFlag={editProfileFlag}
+              setEditprofileFlag={setEditprofileFlag}
+              setUser={setUser}
+            />
+          )}
+        </Stack.Screen>
         {/* -----------------------------------------------------------Ediet Profile ----------------------------------------------------------- */}
 
         <Stack.Screen
@@ -120,13 +145,14 @@ export default function App({ navigation }) {
             },
             headerTintColor: colors.grey,
             headerLeft: () => (
-              <Ionicons
-                style={{ marginRight: 20 }}
-                name="arrow-back"
-                size={30}
-                color="#474747"
-                onPress={() => navigation.goBack()}
-              />
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <Ionicons
+                  style={{ marginRight: 20 }}
+                  name="arrow-back"
+                  size={30}
+                  color="#474747"
+                />
+              </TouchableOpacity>
             ),
           })}
         />
@@ -183,21 +209,24 @@ export default function App({ navigation }) {
             },
             headerTintColor: colors.grey,
             headerLeft: () => (
-              <Ionicons
-                style={{ marginRight: 20 }}
-                name="arrow-back"
-                size={30}
-                color="#474747"
+              <TouchableOpacity
                 onPress={() => {
                   setEditFlag(false);
                   navigation.goBack();
                 }}
-              />
+              >
+                <Ionicons
+                  style={{ marginRight: 20 }}
+                  name="arrow-back"
+                  size={30}
+                  color="#474747"
+                />
+              </TouchableOpacity>
             ),
             headerRight: () => (
               <TouchableOpacity
                 onPress={() => setEditFlag(true)}
-                disabled={editFlag}
+                disabled={editContactFlag}
               >
                 <Feather name="edit-3" size={30} color="black" />
               </TouchableOpacity>
@@ -207,7 +236,7 @@ export default function App({ navigation }) {
           {(props) => (
             <IndividualContact
               {...props}
-              editFlag={editFlag}
+              editFlag={editContactFlag}
               setEditFlag={setEditFlag}
               contacts={contacts}
               handleEditContact={handleEditContact}
@@ -226,13 +255,14 @@ export default function App({ navigation }) {
             headerShadowVisible: false,
             headerTintColor: colors.grey,
             headerLeft: () => (
-              <Ionicons
-                style={{ marginRight: 20 }}
-                name="arrow-back"
-                size={30}
-                color="#474747"
-                onPress={() => navigation.goBack()}
-              />
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <Ionicons
+                  style={{ marginRight: 20 }}
+                  name="arrow-back"
+                  size={30}
+                  color="#474747"
+                />
+              </TouchableOpacity>
             ),
           })}
         >

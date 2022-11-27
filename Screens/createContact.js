@@ -27,10 +27,11 @@ const CreateContact = ({ navigation, handleAddContact }) => {
 
   const [errors, setErrors] = useState({});
 
+  // ------------------------------------------------------Handling Validations------------------------------------------------------
   const conditions = {
     name: Joi.string().min(3).required().label("Name"),
     number: Joi.string().min(11).max(11).required().label("Number"),
-    address: Joi.string().min(3).required().label("Address"),
+    address: Joi.string().min(5).required().label("Address"),
     email: Joi.string()
       .email({
         minDomainSegments: 2,
@@ -40,7 +41,6 @@ const CreateContact = ({ navigation, handleAddContact }) => {
       .label("Email"),
   };
 
-  // ------------------------------------------------------Handling Validations------------------------------------------------------
   const schema = Joi.object(conditions);
 
   const submitContact = () => {
@@ -80,7 +80,7 @@ const CreateContact = ({ navigation, handleAddContact }) => {
     let newErrors = { ...errors };
     let newMessage = handleOnSaveErrors(value, name);
     if (newMessage) newErrors[name] = newMessage;
-    else delete newErrors[name] && newErrors[name];
+    else delete newErrors[name];
     let newData = { ...data };
     newData[name] = value;
     setData(newData);
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   userPic: {
-    marginTop: 50,
+    marginTop: 20,
     height: hp("20%"),
     width: wp("38%"),
   },

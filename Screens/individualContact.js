@@ -50,7 +50,7 @@ const IndividualContact = ({
   const conditions = {
     name: Joi.string().min(3).required().label("Name"),
     number: Joi.string().min(11).max(11).required().label("Number"),
-    address: Joi.string().min(3).required().label("Address"),
+    address: Joi.string().min(5).required().label("Address"),
     email: Joi.string()
       .email({
         minDomainSegments: 2,
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   userPic: {
-    marginTop: 50,
+    marginTop: 20,
     height: hp("20%"),
     width: wp("38%"),
   },
@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginLeft: 5,
     color: colors.grey,
-    width: wp("64%"),
+    width: wp("72%"),
   },
   icon: {
     alignSelf: "center",

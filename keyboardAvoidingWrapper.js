@@ -9,7 +9,12 @@ import colors from "./Colors/colors";
 const KeyBoardAvoidingWrapper = ({ children }) => {
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: colors.background }}
+      style={{
+        flex: 1,
+        backgroundColor: colors.background,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
     >
       <ScrollView>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
