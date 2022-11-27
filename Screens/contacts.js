@@ -20,7 +20,6 @@ const Contact = ({ navigation, route, contacts }) => {
   const renderContact = ({ item }) => (
     <TouchableOpacity
       onPress={() => {
-        console.log("first");
         navigation.navigate("Individual Contact", { constactId: item.key });
       }}
     >
