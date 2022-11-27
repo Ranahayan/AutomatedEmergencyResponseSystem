@@ -16,7 +16,7 @@ import {
 } from "react-native-responsive-screen";
 import { MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 
-const Contact = ({ navigation, route, contacts }) => {
+const Contact = ({ navigation, contacts }) => {
   const renderContact = ({ item }) => (
     <TouchableOpacity
       onPress={() => {

@@ -1,12 +1,22 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Button, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Button,
+  TouchableOpacity,
+  TextInput,
+} from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Home from "./Screens/home";
 import Profile from "./Screens/profile";
 import colors from "./Colors/colors";
 import { FontAwesome5, AntDesign, Ionicons, Feather } from "@expo/vector-icons";
-import Welcome from "./Screens/welcome";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 import Contact from "./Screens/contacts";
 import IndividualContact from "./Screens/individualContact";
 import CreateContact from "./Screens/createContact";
@@ -15,6 +25,8 @@ import { useState } from "react";
 export default function App({ navigation }) {
   const [editContactFlag, setEditFlag] = useState(false);
   const [editProfileFlag, setEditprofileFlag] = useState(false);
+  const [searchContactFlag, setSearchContactFlag] = useState(false);
+  const contactTitle = searchContactFlag ? "" : "Conatct";
 
   const [contacts, setContacts] = useState([
     {
@@ -44,13 +56,6 @@ export default function App({ navigation }) {
       number: "03142501710",
       email: "Dansih975@gmail.com",
       address: "Hafizabad",
-    },
-    {
-      key: 5,
-      name: "ehtsham",
-      number: "03106767710",
-      email: "ehtsham876@gmail.com",
-      address: "pasroor",
     },
   ]);
   const [user, setUser] = useState({
@@ -137,7 +142,7 @@ export default function App({ navigation }) {
         <Stack.Screen
           name="Contacts"
           options={({ navigation }) => ({
-            title: "Contacts",
+            title: contactTitle,
             headerShadowVisible: false,
             headerStyle: {
               backgroundColor: colors.background,
@@ -149,12 +154,22 @@ export default function App({ navigation }) {
                 name="arrow-back"
                 size={30}
                 color="#474747"
-                onPress={() => navigation.goBack()}
+                onPress={() => {
+                  setSearchContactFlag(false);
+                  navigation.goBack();
+                }}
               />
             ),
+
             headerRight: () => (
               <View style={styles.headerRightIcons}>
-                <TouchableOpacity>
+                {searchContactFlag && (
+                  <TextInput
+                    style={styles.searchContact}
+                    placeholder="Search"
+                  />
+                )}
+                <TouchableOpacity onPress={() => setSearchContactFlag(true)}>
                   <FontAwesome5
                     name="search"
                     style={{ marginRight: 20 }}
@@ -260,5 +275,12 @@ const styles = StyleSheet.create({
   },
   headerRightIcons: {
     flexDirection: "row",
+  },
+  searchContact: {
+    fontSize: 18,
+    color: colors.grey,
+    width: wp("30%"),
+    borderWidth: 2,
+    borderColor: "black",
   },
 });
