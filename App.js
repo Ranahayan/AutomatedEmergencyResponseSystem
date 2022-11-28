@@ -22,6 +22,8 @@ import IndividualContact from "./Screens/individualContact";
 import CreateContact from "./Screens/createContact";
 import { useState } from "react";
 
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+
 export default function App({ navigation }) {
   const [editContactFlag, setEditFlag] = useState(false);
   const [editProfileFlag, setEditprofileFlag] = useState(false);
@@ -80,189 +82,191 @@ export default function App({ navigation }) {
   const Stack = createNativeStackNavigator();
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        {/* -----------------------------------------------------------Home----------------------------------------------------------- */}
-        <Stack.Screen
-          name="Home"
-          component={Home}
-          options={{ headerShown: false }}
-        />
+        <GestureHandlerRootView style={{ flex: 1 }}>
+        <Stack.Navigator initialRouteName="Home">
+          {/* -----------------------------------------------------------Home----------------------------------------------------------- */}
+          <Stack.Screen
+            name="Home"
+            component={Home}
+            options={{ headerShown: false }}
+          />
 
-        {/* -----------------------------------------------------------Profile----------------------------------------------------------- */}
+          {/* -----------------------------------------------------------Profile----------------------------------------------------------- */}
 
-        <Stack.Screen
-          name="Profile"
-          options={({ navigation }) => ({
-            title: "Profile",
-            headerShadowVisible: false,
-            headerStyle: {
-              backgroundColor: colors.background,
-            },
-            headerTintColor: colors.grey,
-            headerLeft: () => (
-              <TouchableOpacity
-                onPress={() => {
-                  setEditprofileFlag(false);
-                  navigation.goBack();
-                }}
-              >
-                <Ionicons
-                  style={{ marginRight: 20 }}
-                  name="arrow-back"
-                  size={30}
-                  color="#474747"
-                />
-              </TouchableOpacity>
-            ),
-            headerRight: () => (
-              <TouchableOpacity>
-                <Feather
-                  name="edit-3"
-                  size={30}
-                  color="black"
-                  onPress={() => setEditprofileFlag(true)}
-                />
-              </TouchableOpacity>
-            ),
-          })}
-        >
-          {(props) => (
-            <Profile
-              {...props}
-              user={user}
-              editProfileFlag={editProfileFlag}
-              setEditprofileFlag={setEditprofileFlag}
-              setUser={setUser}
-            />
-          )}
-        </Stack.Screen>
-
-        {/* -----------------------------------------------------------Contacts----------------------------------------------------------- */}
-
-        <Stack.Screen
-          name="Contacts"
-          options={({ navigation }) => ({
-            title: contactTitle,
-            headerShadowVisible: false,
-            headerStyle: {
-              backgroundColor: colors.background,
-            },
-            headerTintColor: colors.grey,
-            headerLeft: () => (
-              <Ionicons
-                style={{ marginRight: 20 }}
-                name="arrow-back"
-                size={30}
-                color="#474747"
-                onPress={() => {
-                  setSearchContactFlag(false);
-                  navigation.goBack();
-                }}
-              />
-            ),
-
-            headerRight: () => (
-              <View style={styles.headerRightIcons}>
-                {searchContactFlag && (
-                  <TextInput
-                    style={styles.searchContact}
-                    placeholder="Search"
-                  />
-                )}
-                <TouchableOpacity onPress={() => setSearchContactFlag(true)}>
-                  <FontAwesome5
-                    name="search"
+          <Stack.Screen
+            name="Profile"
+            options={({ navigation }) => ({
+              title: "Profile",
+              headerShadowVisible: false,
+              headerStyle: {
+                backgroundColor: colors.background,
+              },
+              headerTintColor: colors.grey,
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => {
+                    setEditprofileFlag(false);
+                    navigation.goBack();
+                  }}
+                >
+                  <Ionicons
                     style={{ marginRight: 20 }}
-                    size={27}
+                    name="arrow-back"
+                    size={30}
                     color="#474747"
                   />
                 </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate("Create Contact")}
-                >
-                  <AntDesign name="adduser" size={32} color="#474747" />
+              ),
+              headerRight: () => (
+                <TouchableOpacity>
+                  <Feather
+                    name="edit-3"
+                    size={30}
+                    color="black"
+                    onPress={() => setEditprofileFlag(true)}
+                  />
                 </TouchableOpacity>
-              </View>
-            ),
-          })}
-        >
-          {(props) => <Contact {...props} contacts={contacts} />}
-        </Stack.Screen>
+              ),
+            })}
+          >
+            {(props) => (
+              <Profile
+                {...props}
+                user={user}
+                editProfileFlag={editProfileFlag}
+                setEditprofileFlag={setEditprofileFlag}
+                setUser={setUser}
+              />
+            )}
+          </Stack.Screen>
 
-        {/* -----------------------------------------------------------Individulal Contact----------------------------------------------------------- */}
-        <Stack.Screen
-          name="Individual Contact"
-          options={({ navigation }) => ({
-            title: "",
-            headerShadowVisible: false,
-            headerStyle: {
-              backgroundColor: colors.background,
-            },
-            headerTintColor: colors.grey,
-            headerLeft: () => (
-              <TouchableOpacity
-                onPress={() => {
-                  setEditFlag(false);
-                  navigation.goBack();
-                }}
-              >
+          {/* -----------------------------------------------------------Contacts----------------------------------------------------------- */}
+
+          <Stack.Screen
+            name="Contacts"
+            options={({ navigation }) => ({
+              title: contactTitle,
+              headerShadowVisible: false,
+              headerStyle: {
+                backgroundColor: colors.background,
+              },
+              headerTintColor: colors.grey,
+              headerLeft: () => (
                 <Ionicons
                   style={{ marginRight: 20 }}
                   name="arrow-back"
                   size={30}
                   color="#474747"
+                  onPress={() => {
+                    setSearchContactFlag(false);
+                    navigation.goBack();
+                  }}
                 />
-              </TouchableOpacity>
-            ),
-            headerRight: () => (
-              <TouchableOpacity
-                onPress={() => setEditFlag(true)}
-                disabled={editContactFlag}
-              >
-                <Feather name="edit-3" size={30} color="black" />
-              </TouchableOpacity>
-            ),
-          })}
-        >
-          {(props) => (
-            <IndividualContact
-              {...props}
-              editFlag={editContactFlag}
-              setEditFlag={setEditFlag}
-              contacts={contacts}
-              handleEditContact={handleEditContact}
-            />
-          )}
-        </Stack.Screen>
+              ),
 
-        {/* -----------------------------------------------------------Create Contact----------------------------------------------------------- */}
-        <Stack.Screen
-          name="Create Contact"
-          options={({ navigation }) => ({
-            title: "Create Contact",
-            headerStyle: {
-              backgroundColor: colors.background,
-            },
-            headerShadowVisible: false,
-            headerTintColor: colors.grey,
-            headerLeft: () => (
-              <TouchableOpacity onPress={() => navigation.goBack()}>
-                <Ionicons
-                  style={{ marginRight: 20 }}
-                  name="arrow-back"
-                  size={30}
-                  color="#474747"
-                />
-              </TouchableOpacity>
-            ),
-          })}
-        >
-          {(props) => (
-            <CreateContact {...props} handleAddContact={handleAddContact} />
-          )}
-        </Stack.Screen>
-      </Stack.Navigator>
-    </NavigationContainer>
+              headerRight: () => (
+                <View style={styles.headerRightIcons}>
+                  {searchContactFlag && (
+                    <TextInput
+                      style={styles.searchContact}
+                      placeholder="Search"
+                    />
+                  )}
+                  <TouchableOpacity onPress={() => setSearchContactFlag(true)}>
+                    <FontAwesome5
+                      name="search"
+                      style={{ marginRight: 20 }}
+                      size={27}
+                      color="#474747"
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate("Create Contact")}
+                  >
+                    <AntDesign name="adduser" size={32} color="#474747" />
+                  </TouchableOpacity>
+                </View>
+              ),
+            })}
+          >
+            {(props) => <Contact {...props} contacts={contacts} />}
+          </Stack.Screen>
+
+          {/* -----------------------------------------------------------Individulal Contact----------------------------------------------------------- */}
+          <Stack.Screen
+            name="Individual Contact"
+            options={({ navigation }) => ({
+              title: "",
+              headerShadowVisible: false,
+              headerStyle: {
+                backgroundColor: colors.background,
+              },
+              headerTintColor: colors.grey,
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => {
+                    setEditFlag(false);
+                    navigation.goBack();
+                  }}
+                >
+                  <Ionicons
+                    style={{ marginRight: 20 }}
+                    name="arrow-back"
+                    size={30}
+                    color="#474747"
+                  />
+                </TouchableOpacity>
+              ),
+              headerRight: () => (
+                <TouchableOpacity
+                  onPress={() => setEditFlag(true)}
+                  disabled={editContactFlag}
+                >
+                  <Feather name="edit-3" size={30} color="black" />
+                </TouchableOpacity>
+              ),
+            })}
+          >
+            {(props) => (
+              <IndividualContact
+                {...props}
+                editFlag={editContactFlag}
+                setEditFlag={setEditFlag}
+                contacts={contacts}
+                handleEditContact={handleEditContact}
+              />
+            )}
+          </Stack.Screen>
+
+          {/* -----------------------------------------------------------Create Contact----------------------------------------------------------- */}
+          <Stack.Screen
+            name="Create Contact"
+            options={({ navigation }) => ({
+              title: "Create Contact",
+              headerStyle: {
+                backgroundColor: colors.background,
+              },
+              headerShadowVisible: false,
+              headerTintColor: colors.grey,
+              headerLeft: () => (
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                  <Ionicons
+                    style={{ marginRight: 20 }}
+                    name="arrow-back"
+                    size={30}
+                    color="#474747"
+                  />
+                </TouchableOpacity>
+              ),
+            })}
+          >
+            {(props) => (
+              <CreateContact {...props} handleAddContact={handleAddContact} />
+            )}
+          </Stack.Screen>
+        </Stack.Navigator>
+    </GestureHandlerRootView>
+      </NavigationContainer>
   );
 }
 

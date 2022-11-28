@@ -12,7 +12,11 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { MaterialCommunityIcons, Feather } from "@expo/vector-icons";
+import {
+  MaterialCommunityIcons,
+  Feather,
+  MaterialIcons,
+} from "@expo/vector-icons";
 import KeyBoardAvoidingWrapper from "../keyboardAvoidingWrapper";
 import colors from "../Colors/colors";
 import Register from "./Register";
@@ -107,7 +111,7 @@ const Welcome = () => {
                 />
               </View>
               <View style={styles.inputFields}>
-                <Feather name="lock" size={24} color="grey" />
+                <MaterialIcons name="vpn-key" size={24} color="grey" />
                 <TextInput
                   placeholder="Password"
                   style={styles.passwordInput}
@@ -200,7 +204,7 @@ const styles = StyleSheet.create({
   },
   disableAccountButtons: {
     color: colors.grey,
-    marginBottom: 8,
+    marginBottom: 1,
   },
   loginForm: {
     flexDirection: "column",

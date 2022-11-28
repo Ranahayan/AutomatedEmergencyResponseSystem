@@ -15,7 +15,8 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-const Joi = require("joi");
+// const Joi = require("joi");
+import Joi from "joi";
 
 const CreateContact = ({ navigation, handleAddContact }) => {
   const [data, setData] = useState({

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 import {
   MaterialCommunityIcons,
   Feather,
@@ -17,9 +18,9 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+import colors from "../Colors/colors";
 const Register = ({
   accountActionButtonColor,
-  accountActionButton,
   inputFields,
   passwordInput,
   inputPlaceholder,
@@ -31,11 +32,16 @@ const Register = ({
   const [gender, setGender] = useState("");
   const [bloodGroup, setBloodGroup] = useState("");
   const [show, setShow] = useState(true);
+  const data = [
+    { key: "1", value: "Mobiles", disabled: true },
+    { key: "2", value: "Appliances" },
+  ];
   const eyeButtonClicked = () => {
     setShow(!show);
   };
   const RegisterSubmit = () => {
-    console.log("name", name);
+    console.log("gender", gender);
+    console.log("Blood Group", bloodGroup);
   };
   return (
     <View style={styles.signupForm}>
@@ -85,34 +91,57 @@ const Register = ({
             onChangeText={(value) => setAddress(value)}
           />
         </View>
-        <View style={inputFields}>
+        <View style={styles.pickerInput}>
           <MaterialCommunityIcons
             name="gender-male-female"
             size={24}
             color="grey"
             style={{ marginLeft: -5 }}
           />
-          <TextInput
-            placeholder="Gender"
-            style={inputPlaceholder}
-            onChangeText={(value) => setGender(value)}
-          />
+          <View style={{ width: wp("75%") }}>
+            <Picker
+              onValueChange={(Value, Index) => setGender(Value)}
+              selectedValue={gender}
+            >
+              <Picker.Item label="Male" value="Male" color="grey"></Picker.Item>
+              <Picker.Item
+                label="Female"
+                value="Female"
+                color="grey"
+              ></Picker.Item>
+            </Picker>
+          </View>
         </View>
-        <View style={inputFields}>
+        <View style={styles.valuePicker}></View>
+        <View style={styles.pickerInput}>
           <Fontisto
             name="blood-drop"
             size={24}
             color="grey"
             style={{ marginLeft: 1 }}
           />
-          <TextInput
-            placeholder="Blood Group"
-            style={inputPlaceholder}
-            onChangeText={(value) => setBloodGroup(value)}
-          />
+          <View style={{ marginLeft: 3, width: wp("75%") }}>
+            <Picker
+              onValueChange={(Value, Index) => setBloodGroup(Value)}
+              selectedValue={bloodGroup}
+            >
+              <Picker.Item label="A+" value="A+" color="grey"></Picker.Item>
+              <Picker.Item label="O+" value="O+" color="grey"></Picker.Item>
+              <Picker.Item label="B+" value="B+" color="grey"></Picker.Item>
+              <Picker.Item label="AB+" value="AB+" color="grey"></Picker.Item>
+              <Picker.Item label="A-" value="A-" color="grey"></Picker.Item>
+              <Picker.Item label="O-" value="O-" color="grey"></Picker.Item>
+              <Picker.Item label="B-" value="B-" color="grey"></Picker.Item>
+              <Picker.Item label="AB-" value="AB-" color="grey"></Picker.Item>
+            </Picker>
+          </View>
         </View>
+        <View style={styles.valuePicker}></View>
       </View>
-      <TouchableOpacity style={accountActionButton} onPress={RegisterSubmit}>
+      <TouchableOpacity
+        style={styles.accountActionButton}
+        onPress={RegisterSubmit}
+      >
         <Text style={accountActionButtonColor}>Signup</Text>
       </TouchableOpacity>
     </View>
@@ -125,10 +154,29 @@ const styles = StyleSheet.create({
   signupForm: {
     flexDirection: "column",
     alignItems: "center",
+    marginTop: 10,
   },
   singupInputs: {
     flexDirection: "column",
     justifyContent: "space-evenly",
     height: hp("45%"),
+  },
+  pickerInput: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: -10,
+  },
+  valuePicker: {
+    marginTop: -32,
+    width: wp("80%"),
+    borderBottomColor: "grey",
+    borderBottomWidth: 1,
+  },
+  accountActionButton: {
+    backgroundColor: colors.blue,
+    width: wp("80%"),
+    height: hp("6%"),
+    borderRadius: 20,
+    marginTop: 40,
   },
 });
