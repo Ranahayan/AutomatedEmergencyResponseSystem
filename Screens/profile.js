@@ -21,7 +21,7 @@ import {
   Entypo,
 } from "@expo/vector-icons";
 import KeyBoardAvoidingWrapper from "../keyboardAvoidingWrapper";
-const Joi = require("joi");
+const Joi = require("joi-browser");
 
 const Profile = ({
   navigation,
