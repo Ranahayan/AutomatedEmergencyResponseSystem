@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, memo } from "react";
 import colors from "../Colors/colors";
 import { Feather, Ionicons, AntDesign } from "@expo/vector-icons";
 import KeyBoardAvoidingWrapper from "../keyboardAvoidingWrapper";
@@ -17,106 +17,53 @@ import {
 } from "react-native-responsive-screen";
 const Joi = require("joi");
 
-const CreateContact = ({ navigation, route }) => {
-  const [name, setName] = useState("");
-  const [number, setNumber] = useState("");
-  const [address, setAddress] = useState("");
-  const [email, setEmail] = useState("");
+const CreateContact = ({ navigation, handleAddContact }) => {
+  const [data, setData] = useState({
+    name: "",
+    number: "",
+    address: "",
+    email: "",
+  });
+
   const [errors, setErrors] = useState({});
 
-  const [contacts, setContacts] = useState([
-    {
-      key: 1,
-      name: "Hayan",
-      number: "03142567710",
-      email: "bjbnhkh12hv20@gmail.com",
-      address: "Lahore",
-    },
-    {
-      key: 2,
-      name: "faisal",
-      number: "03142523510",
-      email: "faisal123@gmail.com",
-      address: "okara",
-    },
-    {
-      key: 3,
-      name: "ehtsham",
-      number: "03106767710",
-      email: "ehtsham876@gmail.com",
-      address: "pasroor",
-    },
-    {
-      key: 4,
-      name: "Dansih",
-      number: "03142501710",
-      email: "Dansih975@gmail.com",
-      address: "Hafizabad",
-    },
-    {
-      key: 5,
-      name: "ehtsham",
-      number: "03106767710",
-      email: "ehtsham876@gmail.com",
-      address: "pasroor",
-    },
-  ]);
-
-  const handleName = (val) => {
-    console.log(val);
-    setName(val);
+  // ------------------------------------------------------Handling Validations------------------------------------------------------
+  const conditions = {
+    name: Joi.string().min(3).required().label("Name"),
+    number: Joi.string().min(11).max(11).required().label("Number"),
+    address: Joi.string().min(5).required().label("Address"),
+    email: Joi.string()
+      .email({
+        minDomainSegments: 2,
+        tlds: { allow: ["com", "net"] },
+      })
+      .required()
+      .label("Email"),
   };
 
-  const handleNumber = (value) => {
-    setNumber(value);
-  };
-
-  const handleAddress = (value) => {
-    setAddress(value);
-  };
-
-  const handleEmail = (value) => {
-    setEmail(value);
-  };
-
-  const schema = Joi.object({
-    name: Joi.string().min(3).required(),
-    number: Joi.string().min(11).max(11).required(),
-    address: Joi.string().min(3).required(),
-    email: Joi.string().email({
-      minDomainSegments: 2,
-      tlds: { allow: ["com", "net"] },
-    }),
-  });
+  const schema = Joi.object(conditions);
 
   const submitContact = () => {
     const contact = {
-      name,
-      number,
-      address,
-      email,
+      ...data,
     };
     contact.key =
       Math.random().toString(36).substring(2) +
       new Date().getTime().toString(36);
-
-    const contactList = [...contacts, contact];
-    setContacts(contactList);
+    handleAddContact(contact);
+    navigation.goBack("");
   };
 
   const handleContact = () => {
     const errors = handleErrors();
-    setErrors(errors);
+    setErrors(errors || {});
     if (errors) return;
     submitContact();
   };
 
   const handleErrors = () => {
     const contact = {
-      name,
-      number,
-      address,
-      email,
+      ...data,
     };
     const { error } = schema.validate(contact, {
       abortEarly: false,
@@ -129,6 +76,25 @@ const CreateContact = ({ navigation, route }) => {
     return errors;
   };
 
+  const handleOnChange = (name) => (value) => {
+    let newErrors = { ...errors };
+    let newMessage = handleOnSaveErrors(value, name);
+    if (newMessage) newErrors[name] = newMessage;
+    else delete newErrors[name];
+    let newData = { ...data };
+    newData[name] = value;
+    setData(newData);
+    setErrors(newErrors);
+  };
+
+  const handleOnSaveErrors = (value, name) => {
+    const toBeValidate = { [name]: value };
+    const OnSaveSchema = Joi.object({ [name]: conditions[name] });
+    const { error } = OnSaveSchema.validate(toBeValidate);
+    return error ? error.details[0].message : null;
+  };
+
+  // ------------------------------------------------------Rendering Content------------------------------------------------------
   return (
     <KeyBoardAvoidingWrapper>
       <View style={styles.container}>
@@ -138,60 +104,87 @@ const CreateContact = ({ navigation, route }) => {
         />
         <View style={styles.profileForm}>
           <View style={styles.profileInputs}>
-            <View style={styles.inputFields}>
-              <View style={styles.icon}>
-                <Feather name="user" size={30} color={colors.grey} />
-              </View>
-              <TextInput
-                placeholder="Name"
-                style={styles.inputPlaceholder}
-                autoFocus={true}
-                value={name}
-                onChangeText={handleName}
-              />
-            </View>
-            <View style={styles.inputFields}>
-              <View style={styles.icon}>
-                <Ionicons name="call-outline" size={30} color={colors.grey} />
-              </View>
-              <TextInput
-                placeholder="Number"
-                style={styles.inputPlaceholder}
-                value={number}
-                onChangeText={handleNumber}
-              />
-            </View>
-            <View style={styles.inputFields}>
-              <View style={styles.icon}>
-                <Ionicons
-                  name="location-outline"
-                  size={30}
-                  color={colors.grey}
+            <View style={styles.parentIndividulFeild}>
+              <View style={styles.inputFields}>
+                <View style={styles.icon}>
+                  <Feather name="user" size={30} color={colors.grey} />
+                </View>
+                <TextInput
+                  name="name"
+                  placeholder="Name"
+                  style={styles.inputPlaceholder}
+                  autoFocus={true}
+                  value={data.name}
+                  onChangeText={handleOnChange("name")}
                 />
               </View>
-              <TextInput
-                placeholder="Address"
-                style={styles.inputPlaceholder}
-                value={address}
-                onChangeText={handleAddress}
-              />
+              {errors.name ? (
+                <Text style={styles.errorText}>{errors.name}</Text>
+              ) : null}
             </View>
-            <View style={styles.inputFields}>
-              <View style={styles.icon}>
-                <AntDesign name="mail" size={28} color={colors.grey} />
+            <View style={styles.parentIndividulFeild}>
+              <View style={styles.inputFields}>
+                <View style={styles.icon}>
+                  <Ionicons name="call-outline" size={30} color={colors.grey} />
+                </View>
+                <TextInput
+                  name="number"
+                  placeholder="Number"
+                  style={styles.inputPlaceholder}
+                  value={data.number}
+                  onChangeText={handleOnChange("number")}
+                />
               </View>
-              <TextInput
-                placeholder="Email"
-                style={styles.inputPlaceholder}
-                multiline={true}
-                value={email}
-                onChangeText={handleEmail}
-              />
+              {errors.number ? (
+                <Text style={styles.errorText}>{errors.number}</Text>
+              ) : null}
+            </View>
+            <View style={styles.parentIndividulFeild}>
+              <View style={styles.inputFields}>
+                <View style={styles.icon}>
+                  <Ionicons
+                    name="location-outline"
+                    size={30}
+                    color={colors.grey}
+                  />
+                </View>
+                <TextInput
+                  name="address"
+                  placeholder="Address"
+                  style={styles.inputPlaceholder}
+                  value={data.address}
+                  onChangeText={handleOnChange("address")}
+                />
+              </View>
+              {errors.address ? (
+                <Text style={styles.errorText}>{errors.address}</Text>
+              ) : null}
+            </View>
+            <View style={styles.parentIndividulFeild}>
+              <View style={styles.inputFields}>
+                <View style={styles.icon}>
+                  <AntDesign name="mail" size={28} color={colors.grey} />
+                </View>
+                <TextInput
+                  name="email"
+                  placeholder="Email"
+                  style={styles.inputPlaceholder}
+                  multiline={true}
+                  value={data.email}
+                  onChangeText={handleOnChange("email")}
+                />
+              </View>
+              {errors.email ? (
+                <Text style={styles.errorText}>{errors.email}</Text>
+              ) : null}
             </View>
           </View>
 
           <View style={styles.buttons}>
-            <TouchableOpacity style={styles.appButtonCancel}>
+            <TouchableOpacity
+              style={styles.appButtonCancel}
+              onPress={() => navigation.navigate("Contacts")}
+            >
               <Text style={styles.appInButtonCancel}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -217,7 +210,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   userPic: {
-    marginTop: 50,
+    marginTop: 20,
     height: hp("20%"),
     width: wp("38%"),
   },
@@ -230,14 +223,16 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "space-evenly",
   },
+  parentIndividulFeild: { marginBottom: 25 },
   inputFields: {
     flexDirection: "row",
     width: wp("80%"),
+    flexWrap: "wrap",
     borderBottomColor: colors.grey,
     borderBottomWidth: 2,
     borderRadius: 10,
     padding: 5,
-    marginBottom: 30,
+    marginBottom: 8,
   },
   inputPlaceholder: {
     fontSize: 18,
@@ -289,6 +284,13 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     paddingHorizontal: 20,
   },
+  errorText: {
+    color: "red",
+    marginLeft: 10,
+    // flex: 1,
+    width: wp("60%"),
+    flexWrap: "wrap",
+  },
 });
 
-export default CreateContact;
+export default memo(CreateContact);

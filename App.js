@@ -1,37 +1,97 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Button, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Button,
+  TouchableOpacity,
+  TextInput,
+} from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Home from "./Screens/home";
 import Profile from "./Screens/profile";
 import colors from "./Colors/colors";
-import {
-  Poppins_400Regular,
-  Poppins_400Regular_Italic,
-  Poppins_500Medium,
-  Poppins_500Medium_Italic,
-  Poppins_600SemiBold,
-} from "@expo-google-fonts/poppins";
 import { FontAwesome5, AntDesign, Ionicons, Feather } from "@expo/vector-icons";
-import Welcome from "./Screens/welcome";
-import EditProfile from "./Screens/editProfile";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 import Contact from "./Screens/contacts";
 import IndividualContact from "./Screens/individualContact";
 import CreateContact from "./Screens/createContact";
+import { useState } from "react";
 
 export default function App({ navigation }) {
+  const [editContactFlag, setEditFlag] = useState(false);
+  const [editProfileFlag, setEditprofileFlag] = useState(false);
+  const [searchContactFlag, setSearchContactFlag] = useState(false);
+  const contactTitle = searchContactFlag ? "" : "Conatct";
+
+  const [contacts, setContacts] = useState([
+    {
+      key: 1,
+      name: "Hayan",
+      number: "03142567710",
+      email: "abdulhayan1220@gmail.com",
+      address: "Lahore",
+    },
+    {
+      key: 2,
+      name: "faisal",
+      number: "03142523510",
+      email: "faisal123@gmail.com",
+      address: "okara",
+    },
+    {
+      key: 3,
+      name: "ehtsham",
+      number: "03106767710",
+      email: "ehtsham876@gmail.com",
+      address: "pasroor",
+    },
+    {
+      key: 4,
+      name: "Dansih",
+      number: "03142501710",
+      email: "Dansih975@gmail.com",
+      address: "Hafizabad",
+    },
+  ]);
+  const [user, setUser] = useState({
+    name: "Hayan",
+    address: "Lahore",
+    gender: "Male",
+    bloodGroup: "O+",
+    email: "abdulhayan1220@gmail.com",
+  });
+  const handleAddContact = (contact) => {
+    const contactList = [...contacts, contact];
+    setContacts(contactList);
+  };
+  const handleEditContact = (key, contact) => {
+    let newContacts = [...contacts];
+    const index = newContacts.findIndex((item) => item.key === key);
+    newContacts[index] = { ...contact };
+    setContacts(newContacts);
+    setEditFlag(false);
+  };
+
   const Stack = createNativeStackNavigator();
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
+        {/* -----------------------------------------------------------Home----------------------------------------------------------- */}
         <Stack.Screen
           name="Home"
           component={Home}
           options={{ headerShown: false }}
         />
+
+        {/* -----------------------------------------------------------Profile----------------------------------------------------------- */}
+
         <Stack.Screen
           name="Profile"
-          component={Profile}
           options={({ navigation }) => ({
             title: "Profile",
             headerShadowVisible: false,
@@ -40,50 +100,49 @@ export default function App({ navigation }) {
             },
             headerTintColor: colors.grey,
             headerLeft: () => (
-              <Ionicons
-                style={{ marginRight: 20 }}
-                name="arrow-back"
-                size={30}
-                color="#474747"
-                onPress={() => navigation.goBack()}
-              />
+              <TouchableOpacity
+                onPress={() => {
+                  setEditprofileFlag(false);
+                  navigation.goBack();
+                }}
+              >
+                <Ionicons
+                  style={{ marginRight: 20 }}
+                  name="arrow-back"
+                  size={30}
+                  color="#474747"
+                />
+              </TouchableOpacity>
             ),
             headerRight: () => (
-              <Feather
-                name="edit-3"
-                size={30}
-                color="black"
-                onPress={() => navigation.navigate("Edit Profile")}
-              />
+              <TouchableOpacity>
+                <Feather
+                  name="edit-3"
+                  size={30}
+                  color="black"
+                  onPress={() => setEditprofileFlag(true)}
+                />
+              </TouchableOpacity>
             ),
           })}
-        />
-        <Stack.Screen
-          name="Edit Profile"
-          component={EditProfile}
-          options={({ navigation }) => ({
-            title: "Edit Profile",
-            headerShadowVisible: false,
-            headerStyle: {
-              backgroundColor: colors.background,
-            },
-            headerTintColor: colors.grey,
-            headerLeft: () => (
-              <Ionicons
-                style={{ marginRight: 20 }}
-                name="arrow-back"
-                size={30}
-                color="#474747"
-                onPress={() => navigation.goBack()}
-              />
-            ),
-          })}
-        />
+        >
+          {(props) => (
+            <Profile
+              {...props}
+              user={user}
+              editProfileFlag={editProfileFlag}
+              setEditprofileFlag={setEditprofileFlag}
+              setUser={setUser}
+            />
+          )}
+        </Stack.Screen>
+
+        {/* -----------------------------------------------------------Contacts----------------------------------------------------------- */}
+
         <Stack.Screen
           name="Contacts"
-          component={Contact}
           options={({ navigation }) => ({
-            title: "Contacts",
+            title: contactTitle,
             headerShadowVisible: false,
             headerStyle: {
               backgroundColor: colors.background,
@@ -95,12 +154,22 @@ export default function App({ navigation }) {
                 name="arrow-back"
                 size={30}
                 color="#474747"
-                onPress={() => navigation.goBack()}
+                onPress={() => {
+                  setSearchContactFlag(false);
+                  navigation.goBack();
+                }}
               />
             ),
+
             headerRight: () => (
               <View style={styles.headerRightIcons}>
-                <TouchableOpacity>
+                {searchContactFlag && (
+                  <TextInput
+                    style={styles.searchContact}
+                    placeholder="Search"
+                  />
+                )}
+                <TouchableOpacity onPress={() => setSearchContactFlag(true)}>
                   <FontAwesome5
                     name="search"
                     style={{ marginRight: 20 }}
@@ -116,10 +185,13 @@ export default function App({ navigation }) {
               </View>
             ),
           })}
-        />
+        >
+          {(props) => <Contact {...props} contacts={contacts} />}
+        </Stack.Screen>
+
+        {/* -----------------------------------------------------------Individulal Contact----------------------------------------------------------- */}
         <Stack.Screen
           name="Individual Contact"
-          component={IndividualContact}
           options={({ navigation }) => ({
             title: "",
             headerShadowVisible: false,
@@ -128,30 +200,44 @@ export default function App({ navigation }) {
             },
             headerTintColor: colors.grey,
             headerLeft: () => (
-              <Ionicons
-                style={{ marginRight: 20 }}
-                name="arrow-back"
-                size={30}
-                color="#474747"
-                onPress={() => navigation.goBack()}
-              />
+              <TouchableOpacity
+                onPress={() => {
+                  setEditFlag(false);
+                  navigation.goBack();
+                }}
+              >
+                <Ionicons
+                  style={{ marginRight: 20 }}
+                  name="arrow-back"
+                  size={30}
+                  color="#474747"
+                />
+              </TouchableOpacity>
             ),
             headerRight: () => (
               <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate("Individual Contact", {
-                    editFlag: true,
-                  })
-                }
+                onPress={() => setEditFlag(true)}
+                disabled={editContactFlag}
               >
                 <Feather name="edit-3" size={30} color="black" />
               </TouchableOpacity>
             ),
           })}
-        />
+        >
+          {(props) => (
+            <IndividualContact
+              {...props}
+              editFlag={editContactFlag}
+              setEditFlag={setEditFlag}
+              contacts={contacts}
+              handleEditContact={handleEditContact}
+            />
+          )}
+        </Stack.Screen>
+
+        {/* -----------------------------------------------------------Create Contact----------------------------------------------------------- */}
         <Stack.Screen
           name="Create Contact"
-          component={CreateContact}
           options={({ navigation }) => ({
             title: "Create Contact",
             headerStyle: {
@@ -160,16 +246,21 @@ export default function App({ navigation }) {
             headerShadowVisible: false,
             headerTintColor: colors.grey,
             headerLeft: () => (
-              <Ionicons
-                style={{ marginRight: 20 }}
-                name="arrow-back"
-                size={30}
-                color="#474747"
-                onPress={() => navigation.goBack()}
-              />
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <Ionicons
+                  style={{ marginRight: 20 }}
+                  name="arrow-back"
+                  size={30}
+                  color="#474747"
+                />
+              </TouchableOpacity>
             ),
           })}
-        />
+        >
+          {(props) => (
+            <CreateContact {...props} handleAddContact={handleAddContact} />
+          )}
+        </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -184,5 +275,12 @@ const styles = StyleSheet.create({
   },
   headerRightIcons: {
     flexDirection: "row",
+  },
+  searchContact: {
+    fontSize: 18,
+    color: colors.grey,
+    width: wp("30%"),
+    borderWidth: 2,
+    borderColor: "black",
   },
 });

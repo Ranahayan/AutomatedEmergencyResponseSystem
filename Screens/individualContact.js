@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, memo } from "react";
 import colors from "../Colors/colors";
 import { Feather, Ionicons, AntDesign } from "@expo/vector-icons";
 import KeyBoardAvoidingWrapper from "../keyboardAvoidingWrapper";
@@ -15,57 +15,102 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+const Joi = require("joi");
 
-const IndividualContact = ({ navigation, route }) => {
-  const { constactId, editFlag } = route.params;
-  const [contacts, setContacts] = useState([
-    {
-      key: 1,
-      name: "Hayan",
-      number: "03142567710",
-      email: "bjbnhkh12hv20@gmail.com",
-      address: "Lahore",
-    },
-    {
-      key: 2,
-      name: "faisal",
-      number: "03142523510",
-      email: "faisal123@gmail.com",
-      address: "okara",
-    },
-    {
-      key: 3,
-      name: "ehtsham",
-      number: "03106767710",
-      email: "ehtsham876@gmail.com",
-      address: "pasroor",
-    },
-    {
-      key: 4,
-      name: "Dansih",
-      number: "03142501710",
-      email: "Dansih975@gmail.com",
-      address: "Hafizabad",
-    },
-    {
-      key: 5,
-      name: "ehtsham",
-      number: "03106767710",
-      email: "ehtsham876@gmail.com",
-      address: "pasroor",
-    },
-  ]);
-
-  const [contact, setContact] = useState({});
+const IndividualContact = ({
+  navigation,
+  route,
+  contacts,
+  editFlag,
+  setEditFlag,
+  handleEditContact,
+}) => {
+  const [data, setData] = useState({
+    name: "",
+    number: "",
+    address: "",
+    email: "",
+  });
+  const [errors, setErrors] = useState({});
+  const { constactId } = route.params;
   const [edit, setEdit] = useState(false);
   useEffect(() => {
-    const contact = contacts.find((contact) => contact.key === constactId);
-    setContact(contact);
+    const newContacts = [...contacts];
+    const index = newContacts.findIndex(
+      (contact) => contact.key === constactId
+    );
+    let contact = { ...newContacts[index] };
+    delete contact.key;
+    setData(contact);
   }, []);
-
   useEffect(() => {
     editFlag && setEdit(true);
   }, [editFlag]);
+
+  const conditions = {
+    name: Joi.string().min(3).required().label("Name"),
+    number: Joi.string().min(11).max(11).required().label("Number"),
+    address: Joi.string().min(5).required().label("Address"),
+    email: Joi.string()
+      .email({
+        minDomainSegments: 2,
+        tlds: { allow: ["com", "net"] },
+      })
+      .required()
+      .label("Email"),
+  };
+
+  // ------------------------------------------------------Handling Validations------------------------------------------------------
+  const schema = Joi.object(conditions);
+
+  const submitContact = () => {
+    const contact = {
+      key: Number(constactId),
+      ...data,
+    };
+    handleEditContact(Number(constactId), contact);
+    navigation.goBack("");
+  };
+
+  const handleContact = () => {
+    const errors = handleErrors();
+    setErrors(errors || {});
+    if (errors) return;
+    submitContact();
+  };
+
+  const handleErrors = () => {
+    const contact = {
+      ...data,
+    };
+    const { error } = schema.validate(contact, {
+      abortEarly: false,
+    });
+    if (!error) return null;
+    const errors = {};
+    for (let item of error.details) {
+      errors[item.path[0]] = item.message;
+    }
+    return errors;
+  };
+
+  const handleOnChange = (name) => (value) => {
+    let newErrors = { ...errors };
+    let newMessage = handleOnSaveErrors(value, name);
+    if (newMessage) newErrors[name] = newMessage;
+    else delete newErrors[name] && newErrors[name];
+    let newData = { ...data };
+    newData[name] = value;
+    setData(newData);
+    setErrors(newErrors);
+  };
+
+  const handleOnSaveErrors = (value, name) => {
+    const toBeValidate = { [name]: value };
+    const OnSaveSchema = Joi.object({ [name]: conditions[name] });
+    const { error } = OnSaveSchema.validate(toBeValidate);
+    return error ? error.details[0].message : null;
+  };
 
   return (
     <KeyBoardAvoidingWrapper>
@@ -77,70 +122,107 @@ const IndividualContact = ({ navigation, route }) => {
         <View style={styles.profileForm}>
           {!edit && (
             <Text style={styles.mainName}>
-              {String(contact.name).charAt(0).toUpperCase() +
-                String(contact.name).slice(1)}
+              {String(data.name).charAt(0).toUpperCase() +
+                String(data.name).slice(1)}
             </Text>
           )}
           <View style={styles.profileInputs}>
             {edit && (
-              <View style={styles.inputFields}>
-                <View style={styles.icon}>
-                  <Feather name="user" size={30} color={colors.grey} />
+              <View style={styles.parentIndividulFeild}>
+                <View style={styles.inputFields}>
+                  <View style={styles.icon}>
+                    <Feather name="user" size={30} color={colors.grey} />
+                  </View>
+                  <TextInput
+                    name="name"
+                    placeholder="Name"
+                    style={styles.inputPlaceholder}
+                    autoFocus={true}
+                    value={data.name}
+                    onChangeText={handleOnChange("name")}
+                    editable={edit}
+                  />
                 </View>
-                <TextInput
-                  placeholder="Name"
-                  style={styles.inputPlaceholder}
-                  value={contact.name}
-                  editable={edit ? true : false}
-                  autoFocus={true}
-                />
+                {errors.name ? (
+                  <Text style={styles.errorText}>{errors.name}</Text>
+                ) : null}
               </View>
             )}
-            <View style={styles.inputFields}>
-              <View style={styles.icon}>
-                <Ionicons name="call-outline" size={30} color={colors.grey} />
-              </View>
-              <TextInput
-                placeholder="Number"
-                style={styles.inputPlaceholder}
-                value={contact.number}
-                editable={edit ? true : false}
-              />
-            </View>
-            <View style={styles.inputFields}>
-              <View style={styles.icon}>
-                <Ionicons
-                  name="location-outline"
-                  size={30}
-                  color={colors.grey}
+            <View style={styles.parentIndividulFeild}>
+              <View style={styles.inputFields}>
+                <View style={styles.icon}>
+                  <Ionicons name="call-outline" size={30} color={colors.grey} />
+                </View>
+                <TextInput
+                  name="number"
+                  placeholder="Number"
+                  style={styles.inputPlaceholder}
+                  value={data.number}
+                  onChangeText={handleOnChange("number")}
+                  editable={edit}
                 />
               </View>
-              <TextInput
-                placeholder="Address"
-                style={styles.inputPlaceholder}
-                value={contact.address}
-                editable={edit ? true : false}
-              />
+              {errors.number ? (
+                <Text style={styles.errorText}>{errors.number}</Text>
+              ) : null}
             </View>
-            <View style={styles.inputFields}>
-              <View style={styles.icon}>
-                <AntDesign name="mail" size={28} color={colors.grey} />
+            <View style={styles.parentIndividulFeild}>
+              <View style={styles.inputFields}>
+                <View style={styles.icon}>
+                  <Ionicons
+                    name="location-outline"
+                    size={30}
+                    color={colors.grey}
+                  />
+                </View>
+                <TextInput
+                  name="address"
+                  placeholder="Address"
+                  style={styles.inputPlaceholder}
+                  value={data.address}
+                  onChangeText={handleOnChange("address")}
+                  editable={edit}
+                />
               </View>
-              <TextInput
-                placeholder="Email"
-                style={styles.inputPlaceholder}
-                value={contact.email}
-                multiline={true}
-                editable={edit ? true : false}
-              />
+              {errors.address ? (
+                <Text style={styles.errorText}>{errors.address}</Text>
+              ) : null}
+            </View>
+            <View style={styles.parentIndividulFeild}>
+              <View style={styles.inputFields}>
+                <View style={styles.icon}>
+                  <AntDesign name="mail" size={28} color={colors.grey} />
+                </View>
+                <TextInput
+                  name="email"
+                  placeholder="Email"
+                  style={styles.inputPlaceholder}
+                  multiline={true}
+                  value={data.email}
+                  onChangeText={handleOnChange("email")}
+                  editable={edit}
+                />
+              </View>
+              {errors.email ? (
+                <Text style={styles.errorText}>{errors.email}</Text>
+              ) : null}
             </View>
           </View>
           {edit && (
             <View style={styles.buttons}>
-              <TouchableOpacity style={styles.appButtonCancel}>
+              <TouchableOpacity
+                style={styles.appButtonCancel}
+                onPress={() => {
+                  setEditFlag(false);
+                  navigation.goBack();
+                }}
+              >
                 <Text style={styles.appInButtonCancel}>Cancel</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.appButtonSave}>
+              <TouchableOpacity
+                style={styles.appButtonSave}
+                onPress={handleContact}
+              >
                 <Text style={styles.appInButtonSave}>Save</Text>
               </TouchableOpacity>
             </View>
@@ -161,7 +243,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   userPic: {
-    marginTop: 50,
+    marginTop: 20,
     height: hp("20%"),
     width: wp("38%"),
   },
@@ -174,6 +256,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "space-evenly",
   },
+  parentIndividulFeild: { marginBottom: 25 },
   inputFields: {
     flexDirection: "row",
     width: wp("80%"),
@@ -181,13 +264,13 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderRadius: 10,
     padding: 5,
-    marginBottom: 30,
+    marginBottom: 8,
   },
   inputPlaceholder: {
     fontSize: 18,
     marginLeft: 5,
     color: colors.grey,
-    width: wp("64%"),
+    width: wp("72%"),
   },
   icon: {
     alignSelf: "center",
@@ -232,6 +315,12 @@ const styles = StyleSheet.create({
     color: "#fff",
     alignSelf: "center",
     paddingHorizontal: 20,
+  },
+  errorText: {
+    color: "red",
+    marginLeft: 10,
+    width: wp("60%"),
+    flexWrap: "wrap",
   },
 });
 

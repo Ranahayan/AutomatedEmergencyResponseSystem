@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo } from "react";
 import colors from "../Colors/colors";
 import {
   View,
@@ -16,48 +16,10 @@ import {
 } from "react-native-responsive-screen";
 import { MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 
-const Contact = ({ navigation }) => {
-  const [contacts, setContacts] = useState([
-    {
-      key: 1,
-      name: "Hayan",
-      number: "03142567710",
-      email: "abdulhayan1220@gmail.com",
-      address: "Lahore",
-    },
-    {
-      key: 2,
-      name: "faisal",
-      number: "03142523510",
-      email: "faisal123@gmail.com",
-      address: "okara",
-    },
-    {
-      key: 3,
-      name: "ehtsham",
-      number: "03106767710",
-      email: "ehtsham876@gmail.com",
-      address: "pasroor",
-    },
-    {
-      key: 4,
-      name: "Dansih",
-      number: "03142501710",
-      email: "Dansih975@gmail.com",
-      address: "Hafizabad",
-    },
-    {
-      key: 5,
-      name: "ehtsham",
-      number: "03106767710",
-      email: "ehtsham876@gmail.com",
-      address: "pasroor",
-    },
-  ]);
+const Contact = ({ navigation, contacts }) => {
   const renderContact = ({ item }) => (
     <TouchableOpacity
       onPress={() => {
-        console.log("first");
         navigation.navigate("Individual Contact", { constactId: item.key });
       }}
     >
@@ -151,4 +113,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Contact;
+export default memo(Contact);
