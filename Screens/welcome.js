@@ -5,15 +5,21 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Modal,
+  Switch,
 } from "react-native";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { MaterialCommunityIcons, Feather } from "@expo/vector-icons";
+import {
+  MaterialCommunityIcons,
+  Feather,
+  MaterialIcons,
+} from "@expo/vector-icons";
 import KeyBoardAvoidingWrapper from "../keyboardAvoidingWrapper";
-import Register from "./Register";
 import colors from "../Colors/colors";
+import Register from "./Register";
 
 const Welcome = () => {
   const [login, setlogin] = useState(true);
@@ -21,6 +27,8 @@ const Welcome = () => {
   const [show, setShow] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showpopup, setShowpopup] = useState(false);
+  const [switchvalue, setSwitchvalue] = useState(false);
   const showLogin = () => {
     setlogin(true);
     setsignup(false);
@@ -32,10 +40,16 @@ const Welcome = () => {
   const eyeButtonClicked = () => {
     setShow(!show);
   };
+  const toggleSwitch = (value) => {
+    console.log("value of toggle button", value);
+    setSwitchvalue(value);
+    setShowpopup(false);
+  };
 
   const loginSubmit = () => {
     console.log(email);
     console.log(password);
+    setShowpopup(!showpopup);
   };
 
   return (
@@ -97,7 +111,7 @@ const Welcome = () => {
                 />
               </View>
               <View style={styles.inputFields}>
-                <Feather name="lock" size={24} color="grey" />
+                <MaterialIcons name="vpn-key" size={24} color="grey" />
                 <TextInput
                   placeholder="Password"
                   style={styles.passwordInput}
@@ -119,11 +133,27 @@ const Welcome = () => {
             >
               <Text style={styles.accountActionButtonColor}>Login</Text>
             </TouchableOpacity>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={showpopup}
+              onRequestClose={() => {}}
+            >
+              <View style={styles.popupContainer}>
+                <View style={styles.popupContent}>
+                  <Text>Enable Accident Detection</Text>
+                  <Switch onValueChange={toggleSwitch} value={switchvalue} />
+                </View>
+              </View>
+            </Modal>
           </View>
         ) : (
           <Register
             accountActionButtonColor={styles.accountActionButtonColor}
             accountActionButton={styles.accountActionButton}
+            inputFields={styles.inputFields}
+            passwordInput={styles.passwordInput}
+            inputPlaceholder={styles.inputPlaceholder}
           />
         )}
       </View>
@@ -155,7 +185,7 @@ const styles = StyleSheet.create({
   accountButtons: {
     flexDirection: "row",
     justifyContent: "space-evenly",
-    marginTop: "40%",
+    marginTop: "20%",
   },
   showloginFormButton: {
     width: wp("10%"),
@@ -174,7 +204,7 @@ const styles = StyleSheet.create({
   },
   disableAccountButtons: {
     color: colors.grey,
-    marginBottom: 8,
+    marginBottom: 1,
   },
   loginForm: {
     flexDirection: "column",
@@ -216,5 +246,21 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: "bold",
     lineHeight: hp("6%"),
+  },
+  popupContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
+  popupContent: {
+    width: wp("80%"),
+    height: hp("10%"),
+    marginBottom: "45%",
+    borderRadius: 30,
+    backgroundColor: "#fff",
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+    elevation: 5,
   },
 });
