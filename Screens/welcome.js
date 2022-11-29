@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
   popupContent: {
     width: wp("80%"),
     height: hp("10%"),
-    marginBottom: "45%",
+    marginBottom: hp("25%"),
     borderRadius: 30,
     backgroundColor: "#fff",
     flexDirection: "row",
