@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import colors from "../Colors/colors";
 import {
   View,
@@ -24,7 +24,6 @@ import KeyBoardAvoidingWrapper from "../keyboardAvoidingWrapper";
 
 const Joi = require("joi-browser");
 
-
 const Profile = ({
   navigation,
   user,
@@ -32,6 +31,7 @@ const Profile = ({
   setEditprofileFlag,
   setUser,
 }) => {
+  const inputElement = useRef(null);
   const [data, setData] = useState({
     name: "",
     address: "",
@@ -66,7 +66,6 @@ const Profile = ({
     const user = {
       ...data,
     };
-    console.log(user);
     setUser(user);
     setEditprofileFlag(false);
     navigation.goBack("");
@@ -120,24 +119,46 @@ const Profile = ({
         />
         <View style={styles.profileForm}>
           <View style={styles.profileInputs}>
-            <View style={styles.parentIndividulFeild}>
-              <View style={styles.inputFields}>
-                <View style={styles.icon}>
-                  <Feather name="user" size={25} color={colors.grey} />
+            {!editProfileFlag && (
+              <View style={styles.parentIndividulFeild}>
+                <View style={styles.inputFields}>
+                  <View style={styles.icon}>
+                    <Feather name="user" size={25} color={colors.grey} />
+                  </View>
+                  <TextInput
+                    placeholder="Name"
+                    style={styles.inputPlaceholder}
+                    value={data.name}
+                    editable={editProfileFlag}
+                    onChangeText={handleOnChange("name")}
+                    focus={editProfileFlag}
+                  />
                 </View>
-                <TextInput
-                  placeholder="Name"
-                  style={styles.inputPlaceholder}
-                  value={data.name}
-                  autoFocus={editProfileFlag}
-                  editable={editProfileFlag}
-                  onChangeText={handleOnChange("name")}
-                />
+                {errors.name ? (
+                  <Text style={styles.errorText}>{errors.name}</Text>
+                ) : null}
               </View>
-              {errors.name ? (
-                <Text style={styles.errorText}>{errors.name}</Text>
-              ) : null}
-            </View>
+            )}
+            {editProfileFlag && (
+              <View style={styles.parentIndividulFeild}>
+                <View style={styles.inputFields}>
+                  <View style={styles.icon}>
+                    <Feather name="user" size={25} color={colors.grey} />
+                  </View>
+                  <TextInput
+                    autoFocus={true}
+                    placeholder="Name"
+                    style={styles.inputPlaceholder}
+                    value={data.name}
+                    editable={editProfileFlag}
+                    onChangeText={handleOnChange("name")}
+                  />
+                </View>
+                {errors.name ? (
+                  <Text style={styles.errorText}>{errors.name}</Text>
+                ) : null}
+              </View>
+            )}
             <View style={styles.parentIndividulFeild}>
               <View style={styles.inputFields}>
                 <View style={styles.icon}>

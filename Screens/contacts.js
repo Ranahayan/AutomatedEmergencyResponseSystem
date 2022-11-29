@@ -14,9 +14,8 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 
-const Contact = ({ navigation, contacts }) => {
+const Contact = ({ navigation, contacts, searchContactFlag }) => {
   const renderContact = ({ item }) => (
     <TouchableOpacity
       onPress={() => {
@@ -40,19 +39,27 @@ const Contact = ({ navigation, contacts }) => {
   );
   return (
     <View style={styles.container}>
-      <Image
-        style={styles.userPic}
-        source={require("../assets/add-user.png")}
-      />
-      <View style={styles.profileForm}>
-        <View style={styles.profileInputs}>
-          <FlatList
-            data={contacts}
-            showsVerticalScrollIndicator={false}
-            renderItem={renderContact}
-          />
+      {!searchContactFlag && (
+        <Image
+          style={styles.userPic}
+          source={require("../assets/add-user.png")}
+        />
+      )}
+      {contacts.length !== 0 ? (
+        <View style={styles.profileForm}>
+          <View style={styles.profileInputs}>
+            <FlatList
+              data={contacts}
+              showsVerticalScrollIndicator={false}
+              renderItem={renderContact}
+            />
+          </View>
         </View>
-      </View>
+      ) : (
+        <View style={styles.noResults}>
+          <Text style={styles.noResultsText}>No results found</Text>
+        </View>
+      )}
       <StatusBar style="auto" />
     </View>
   );
@@ -110,6 +117,14 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "500",
     color: colors.grey,
+  },
+  noResults: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  noResultsText: {
+    fontSize: 18,
   },
 });
 

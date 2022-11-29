@@ -35,6 +35,7 @@ const IndividualContact = ({
   const { constactId } = route.params;
   const [edit, setEdit] = useState(false);
   useEffect(() => {
+    console.log(constactId);
     const newContacts = [...contacts];
     const index = newContacts.findIndex(
       (contact) => contact.key === constactId
@@ -65,10 +66,10 @@ const IndividualContact = ({
 
   const submitContact = () => {
     const contact = {
-      key: Number(constactId),
+      key: constactId,
       ...data,
     };
-    handleEditContact(Number(constactId), contact);
+    handleEditContact(constactId, contact);
     navigation.goBack("");
   };
 
