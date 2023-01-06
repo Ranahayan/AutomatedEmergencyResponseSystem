@@ -14,12 +14,18 @@ import {
 } from "react-native-responsive-screen";
 import {
   MaterialCommunityIcons,
-  Feather,
   MaterialIcons,
 } from "@expo/vector-icons";
 import KeyBoardAvoidingWrapper from "../keyboardAvoidingWrapper";
-import colors from "../Colors/colors";
+// import colors from "../Colors/colors.js";
 import Register from "./Register";
+const colors = {
+  grey: "#474747",
+  background: "#FBFBFB",
+  blue: "#0165FF ",
+};
+
+
 
 const Welcome = () => {
   const [login, setlogin] = useState(true);
@@ -161,7 +167,6 @@ const Welcome = () => {
   );
 };
 
-export default Welcome;
 
 const styles = StyleSheet.create({
   welcomeText: {
@@ -235,7 +240,7 @@ const styles = StyleSheet.create({
   },
 
   accountActionButton: {
-    backgroundColor: colors.blue,
+    backgroundColor: '#0165FF',
     width: wp("80%"),
     height: hp("6%"),
     borderRadius: 20,
@@ -264,3 +269,4 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
 });
+export default Welcome;

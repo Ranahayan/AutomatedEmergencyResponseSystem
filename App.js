@@ -30,6 +30,7 @@ import CreateContact from "./Screens/createContact";
 import { useState } from "react";
 
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import Welcome from "./Screens/welcome";
 export default function App(props) {
   const [editContactFlag, setEditFlag] = useState(false);
   const [editProfileFlag, setEditprofileFlag] = useState(false);
@@ -110,7 +111,15 @@ export default function App(props) {
   const Stack = createNativeStackNavigator();
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
+      <Stack.Navigator initialRouteName="Welcome">
+        
+        {/* -----------------------------------------------------------Home----------------------------------------------------------- */}
+        {/* <Stack.Screen
+          name="Welcome"
+          component={Welcome}
+          options={{ headerShown: false }}
+        /> */}
+
         {/* -----------------------------------------------------------Home----------------------------------------------------------- */}
         <Stack.Screen
           name="Home"
