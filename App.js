@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import Splash from "./Screens/splash";
 import Home from "./Screens/home";
 import Profile from "./Screens/profile";
 import colors from "./Colors/colors";
@@ -114,11 +115,11 @@ export default function App(props) {
       <Stack.Navigator initialRouteName="Welcome">
         
         {/* -----------------------------------------------------------Home----------------------------------------------------------- */}
-        {/* <Stack.Screen
-          name="Welcome"
-          component={Welcome}
+        <Stack.Screen
+          name="Splash"
+          component={Splash}
           options={{ headerShown: false }}
-        /> */}
+        />
 
         {/* -----------------------------------------------------------Home----------------------------------------------------------- */}
         <Stack.Screen
