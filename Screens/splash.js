@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     lineHeight: 35,
   },
   logo:{
-    width:wp(70),
-    height:hp(21),
+    width:wp("70%"),
+    height:hp("21%"),
   }
 });

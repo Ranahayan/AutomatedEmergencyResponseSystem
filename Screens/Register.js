@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   accountActionButton: {
-    backgroundColor: colors.blue,
+    backgroundColor: "#0165FF",
     width: wp("80%"),
     height: hp("6%"),
     borderRadius: 20,

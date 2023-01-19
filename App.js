@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React, { createRef, useEffect, useRef } from "react";
+import React, { createRef, useState, useEffect, useRef } from "react";
 import {
   StyleSheet,
   Text,
@@ -10,10 +10,6 @@ import {
 } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Splash from "./Screens/splash";
-import Home from "./Screens/home";
-import Profile from "./Screens/profile";
-import colors from "./Colors/colors";
 import {
   FontAwesome5,
   AntDesign,
@@ -25,14 +21,19 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import Splash from "./Screens/splash";
+import Welcome from "./Screens/welcome";
+import Home from "./Screens/home";
+import Profile from "./Screens/profile";
+import colors from "./Colors/colors";
 import Contact from "./Screens/contacts";
 import IndividualContact from "./Screens/individualContact";
 import CreateContact from "./Screens/createContact";
-import { useState } from "react";
 
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import Welcome from "./Screens/welcome";
+
 export default function App(props) {
+  const[showSplashScreen, setShowSplashScreen]=useState(true)
   const [editContactFlag, setEditFlag] = useState(false);
   const [editProfileFlag, setEditprofileFlag] = useState(false);
   const [searchContactFlag, setSearchContactFlag] = useState(false);
@@ -78,6 +79,9 @@ export default function App(props) {
   const [finalContactList, setFinalContactList] = useState([]);
   useEffect(() => {
     setFinalContactList(contacts);
+    setTimeout(() => {
+      setShowSplashScreen(false)
+    }, 20000);
   }, []);
 
   const handleSearchContact = (val) => {
@@ -112,12 +116,25 @@ export default function App(props) {
   const Stack = createNativeStackNavigator();
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Welcome">
+      <Stack.Navigator >
         
-        {/* -----------------------------------------------------------Home----------------------------------------------------------- */}
+        {/* -----------------------------------------------------------Splash----------------------------------------------------------- */}
+        
+         {
+          showSplashScreen ? (
+            <Stack.Screen
+            name="Splash"
+            component={Splash}
+            options={{ headerShown: false }}
+          />
+          ):null
+         }
+        
+
+        {/* -----------------------------------------------------------Login/Welcome----------------------------------------------------------- */}
         <Stack.Screen
-          name="Splash"
-          component={Splash}
+          name="Welcome"
+          component={Welcome}
           options={{ headerShown: false }}
         />
 

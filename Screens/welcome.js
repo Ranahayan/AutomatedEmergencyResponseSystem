@@ -17,12 +17,12 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import KeyBoardAvoidingWrapper from "../keyboardAvoidingWrapper";
-// import colors from "../Colors/colors.js";
+// import colors from "../Colors/colors";
 import Register from "./Register";
 const colors = {
-  grey: "#474747",
+  greyColor: "#474747",
   background: "#FBFBFB",
-  blue: "#0165FF ",
+  blueColor: "#0165FF",
 };
 
 
@@ -176,13 +176,13 @@ const styles = StyleSheet.create({
   },
   firstHeading: {
     textAlign: "center",
-    color: colors.grey,
+    color: colors.greyColor,
     fontWeight: "900",
     fontSize: 30,
   },
   secondHeading: {
     textAlign: "center",
-    color: colors.blue,
+    color: colors.blueColor,
     fontWeight: "800",
     fontSize: 20,
     fontStyle: "italic",
@@ -204,11 +204,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   accountsButtonColor: {
-    color: colors.blue,
+    color: "#0165FF",
     fontWeight: "900",
   },
   disableAccountButtons: {
-    color: colors.grey,
+    color: colors.greyColor,
     marginBottom: 1,
   },
   loginForm: {
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
   },
 
   accountActionButton: {
-    backgroundColor: '#0165FF',
+    backgroundColor: colors.blueColor,
     width: wp("80%"),
     height: hp("6%"),
     borderRadius: 20,
