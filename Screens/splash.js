@@ -14,6 +14,7 @@ const Splash = () => {
         <Text style={{ color: "#0165FF" }}>
           {" "}
           {"\n"}Automated {"\n"} Emergency Response {"\n"}System
+          {/* dhvsjvsv */}
         </Text>
       </Text>
     </View>
