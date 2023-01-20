@@ -8,7 +8,7 @@ import {
 const Splash = () => {
   return (
     <View style={styles.container}>
-      <Image style={styles.logo} source={require('../assets/FYP_Logo.jpg')}/>
+      <Image style={styles.logo} source={require('../assets/transparentLogo.png')}/>
       <Text style={styles.title}>
         Welcome to
         <Text style={{ color: "#0165FF" }}>
