@@ -24,7 +24,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { Accelerometer, Gyroscope } from "expo-sensors";
 import * as Location from "expo-location";
-import MapView from "react-native-maps";
+import MapView, { Marker } from "react-native-maps";
 
 const Home = () => {
   const drawer = useRef(null);
@@ -160,19 +160,13 @@ const Home = () => {
       renderNavigationView={navigationView}
     >
       <View style={styles.container}>
-        <Button
-          title="Open drawer"
-          onPress={() => {
-            drawer.current.openDrawer();
-          }}
-        />
-          <MapView style={styles.map} region={location}>
-            <MapView.Marker
-              coordinate={location}
-              title="My Location"
-              description="This is where I am currently located"
-            />
-          </MapView>
+        <MapView style={styles.map} region={location}>
+          <Marker
+            coordinate={location}
+            title="My Location"
+            description="This is where I am currently located"
+          />
+        </MapView>
       </View>
       <StatusBar style="auto" />
     </DrawerLayoutAndroid>
@@ -186,8 +180,8 @@ const styles = StyleSheet.create({
   },
 
   map: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   navigationContainer: {
     backgroundColor: "#ecf0f1",
