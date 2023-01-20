@@ -1,13 +1,11 @@
 import {
-  Button,
-  DrawerLayoutAndroid,
-  Text,
   StyleSheet,
   View,
   Image,
   TextInput,
   TouchableOpacity,
   StatusBar,
+  Button,
 } from "react-native";
 import {
   FontAwesome,
@@ -15,8 +13,8 @@ import {
   SimpleLineIcons,
   Ionicons,
 } from "@expo/vector-icons";
-import React, { useRef, useState, useEffect } from "react";
 import colors from "../Colors/colors";
+import React, { useRef, useState, useEffect } from "react";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -25,10 +23,11 @@ import { useNavigation } from "@react-navigation/native";
 import { Accelerometer, Gyroscope } from "expo-sensors";
 import * as Location from "expo-location";
 import MapView, { Marker } from "react-native-maps";
+import Drawer from "react-native-drawer";
+import DrawerContent from "./drawerContent";
 
-const Home = () => {
-  const drawer = useRef(null);
-  const navigation = useNavigation();
+const Home = ({ navigation }) => {
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [location, setLocation] = useState({
     latitude: 37.78825,
     longitude: -122.4324,
@@ -72,94 +71,36 @@ const Home = () => {
     //   console.log("gyroscopeData",gyroscopeData);
     // })
   }, []);
-
-  const navigationView = () => (
-    <View style={styles.container}>
-      <View style={styles.drawerBack}>
-        <TouchableOpacity onPress={() => drawer.current.closeDrawer()}>
-          <Ionicons name="arrow-back" size={30} color={colors.grey} />
-        </TouchableOpacity>
-      </View>
-      <Image
-        style={styles.userPic}
-        source={require("../assets/user-pic.png")}
-      />
-      <View style={styles.profileForm}>
-        <View style={styles.profileInputs}>
-          <View style={styles.parentIndividulFeild}>
-            <TouchableOpacity
-              style={styles.inputFields}
-              onPress={() => {
-                drawer.current.closeDrawer();
-                navigation.navigate("Profile");
-              }}
-            >
-              <View style={styles.icon}>
-                <FontAwesome name="user" size={27} color={colors.grey} />
-              </View>
-              <TextInput
-                placeholder="Name"
-                style={styles.inputPlaceholder}
-                value={"Profile"}
-                editable={false}
-              />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.parentIndividulFeild}>
-            <TouchableOpacity
-              style={styles.inputFields}
-              onPress={() => navigation.navigate("Contacts")}
-            >
-              <View style={styles.icon}>
-                <FontAwesome name="users" size={22} color={colors.grey} />
-              </View>
-              <TextInput
-                placeholder="Contacts"
-                style={styles.inputPlaceholder}
-                value={"Contact List"}
-                editable={false}
-              />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.parentIndividulFeild}>
-            <TouchableOpacity style={styles.inputFields}>
-              <View style={styles.icon}>
-                <FontAwesome5 name="ambulance" size={21} color={colors.grey} />
-              </View>
-              <TextInput
-                placeholder="Request Emergency"
-                style={styles.inputPlaceholder}
-                value={"Request Emergency"}
-                editable={false}
-              />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.parentIndividulFeild}>
-            <TouchableOpacity style={styles.inputFields}>
-              <View style={styles.icon}>
-                <SimpleLineIcons name="logout" size={22} color={colors.grey} />
-              </View>
-              <TextInput
-                placeholder="Logout"
-                style={styles.inputPlaceholder}
-                value={"Logout"}
-                editable={false}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    </View>
-  );
+  const changeDrawerState = () => {
+    setDrawerOpen(!drawerOpen);
+  };
 
   return (
-    <DrawerLayoutAndroid
-      ref={drawer}
-      drawerWidth={300}
-      drawerPosition="left"
-      renderNavigationView={navigationView}
+    <Drawer
+      open={drawerOpen}
+      onClose={() => setDrawerOpen(false)}
+      onOpen={() => setDrawerOpen(true)}
+      type="overlay"
+      content={
+        <DrawerContent
+          styles={styles}
+          changeDrawerState={changeDrawerState}
+          navigation={navigation}
+        />
+      }
+      tapToClose={true}
+      openDrawerOffset={0.2}
+      panCloseMask={0.2}
+      // closedDrawerOffset={-1}
+      styles={drawerStyles}
+      tweenHandler={(ratio) => ({
+        main: { opacity: (2 - ratio) / 2 },
+      })}
     >
       <View style={styles.container}>
+        <TouchableOpacity onPress={() => setDrawerOpen(!drawerOpen)}>
+          <Ionicons name="arrow-back" size={30} color={colors.grey} />
+        </TouchableOpacity>
         <MapView style={styles.map} region={location}>
           <Marker
             coordinate={location}
@@ -169,8 +110,12 @@ const Home = () => {
         </MapView>
       </View>
       <StatusBar style="auto" />
-    </DrawerLayoutAndroid>
+    </Drawer>
   );
+};
+
+const drawerStyles = {
+  drawer: { shadowColor: "#000000", shadowOpacity: 0.8, shadowRadius: 3 },
 };
 const styles = StyleSheet.create({
   container: {
