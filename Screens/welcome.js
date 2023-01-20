@@ -27,7 +27,7 @@ const colors = {
 
 
 
-const Welcome = () => {
+const Welcome = ({navigation}) => {
   const [login, setlogin] = useState(true);
   const [signup, setsignup] = useState(false);
   const [show, setShow] = useState(true);
@@ -50,6 +50,7 @@ const Welcome = () => {
     console.log("value of toggle button", value);
     setSwitchvalue(value);
     setShowpopup(false);
+    navigation.navigate('Home')
   };
 
   const loginSubmit = () => {
@@ -57,6 +58,12 @@ const Welcome = () => {
     console.log(password);
     setShowpopup(!showpopup);
   };
+
+  const backToLogin = () => {
+    setlogin(!login);
+    setsignup(false);
+
+  }
 
   return (
     <KeyBoardAvoidingWrapper>
@@ -160,6 +167,7 @@ const Welcome = () => {
             inputFields={styles.inputFields}
             passwordInput={styles.passwordInput}
             inputPlaceholder={styles.inputPlaceholder}
+            backToLogin={backToLogin}
           />
         )}
       </View>

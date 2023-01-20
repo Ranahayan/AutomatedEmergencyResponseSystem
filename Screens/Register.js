@@ -24,6 +24,7 @@ const Register = ({
   inputFields,
   passwordInput,
   inputPlaceholder,
+  backToLogin
 }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -42,6 +43,7 @@ const Register = ({
   const RegisterSubmit = () => {
     console.log("gender", gender);
     console.log("Blood Group", bloodGroup);
+    backToLogin();
   };
   return (
     <View style={styles.signupForm}>
