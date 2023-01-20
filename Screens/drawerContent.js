@@ -1,4 +1,10 @@
-import { View, Image, TextInput, TouchableOpacity } from "react-native";
+import {
+  View,
+  Image,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
 import {
   FontAwesome,
   FontAwesome5,
@@ -14,7 +20,7 @@ export default function DrawerContent({
   navigation,
 }) {
   return (
-    <View style={styles.container}>
+    <View style={thisStyles.container}>
       <View style={styles.drawerBack}>
         <TouchableOpacity onPress={() => changeDrawerState()}>
           <Ionicons name="arrow-back" size={30} color={colors.grey} />
@@ -91,3 +97,11 @@ export default function DrawerContent({
     </View>
   );
 }
+
+const thisStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+    alignItems: "center",
+  },
+});

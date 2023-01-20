@@ -91,16 +91,21 @@ const Home = ({ navigation }) => {
       tapToClose={true}
       openDrawerOffset={0.2}
       panCloseMask={0.2}
-      // closedDrawerOffset={-1}
+      closedDrawerOffset={-2}
       styles={drawerStyles}
       tweenHandler={(ratio) => ({
         main: { opacity: (2 - ratio) / 2 },
       })}
     >
       <View style={styles.container}>
-        <TouchableOpacity onPress={() => setDrawerOpen(!drawerOpen)}>
-          <Ionicons name="arrow-back" size={30} color={colors.grey} />
-        </TouchableOpacity>
+        <View>
+          <TouchableOpacity
+            style={styles.drawerIcon}
+            onPress={() => setDrawerOpen(!drawerOpen)}
+          >
+            <Ionicons name="menu" size={40} color={colors.grey} />
+          </TouchableOpacity>
+        </View>
         <MapView style={styles.map} region={location}>
           <Marker
             coordinate={location}
@@ -121,13 +126,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    alignItems: "center",
+    // alignItems: "center",
   },
 
   map: {
     width: "100%",
     height: "100%",
   },
+  drawerIcon: { position: "absolute", left: 15, top: 10, zIndex: 2 },
   navigationContainer: {
     backgroundColor: "#ecf0f1",
   },
