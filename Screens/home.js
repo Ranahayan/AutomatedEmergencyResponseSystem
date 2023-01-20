@@ -15,20 +15,63 @@ import {
   SimpleLineIcons,
   Ionicons,
 } from "@expo/vector-icons";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import colors from "../Colors/colors";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { useNavigation } from "@react-navigation/native";
+import { Accelerometer, Gyroscope } from "expo-sensors";
+import * as Location from "expo-location";
+import MapView from "react-native-maps";
 
 const Home = () => {
-  const [flag, setFlag] = useState(false);
   const drawer = useRef(null);
-  console.log("first");
   const navigation = useNavigation();
-  const drawertemp = drawer;
+  const [location, setLocation] = useState({
+    latitude: 37.78825,
+    longitude: -122.4324,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  });
+  const getUserLocation = async () => {
+    try {
+      let { status } = await Location.requestPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(
+          "Permission not granted",
+          "Allow the app to use location service.",
+          [{ text: "OK" }],
+          { cancelable: false }
+        );
+      }
+      const currenLocation = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+        timeout: 20000,
+      });
+      console.log(currenLocation);
+      setLocation({
+        latitude: currenLocation.coords.latitude,
+        longitude: currenLocation.coords.longitude,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      });
+    } catch (error) {
+      console.log(error.message);
+      console.log("error");
+    }
+  };
+
+  useEffect(() => {
+    getUserLocation();
+    // const accelerometerSubscription=Accelerometer.addListener(accelerometerData=>{
+    //   console.log(accelerometerData);
+    // })
+    // const gyroscopeSubscription=Gyroscope.addListener(gyroscopeData=>{
+    //   console.log("gyroscopeData",gyroscopeData);
+    // })
+  }, []);
 
   const navigationView = () => (
     <View style={styles.container}>
@@ -49,8 +92,6 @@ const Home = () => {
               onPress={() => {
                 drawer.current.closeDrawer();
                 navigation.navigate("Profile");
-                console.log(drawer);
-                setFlag(true);
               }}
             >
               <View style={styles.icon}>
@@ -113,23 +154,25 @@ const Home = () => {
 
   return (
     <DrawerLayoutAndroid
-      ref={!flag ? drawer : drawertemp}
+      ref={drawer}
       drawerWidth={300}
       drawerPosition="left"
       renderNavigationView={navigationView}
     >
       <View style={styles.container}>
-        <Text style={styles.paragraph}>
-          Swipe from the side or press button below to see it!
-        </Text>
         <Button
           title="Open drawer"
           onPress={() => {
-            // drawer =
             drawer.current.openDrawer();
-            console.log(drawer);
           }}
         />
+          <MapView style={styles.map} region={location}>
+            <MapView.Marker
+              coordinate={location}
+              title="My Location"
+              description="This is where I am currently located"
+            />
+          </MapView>
       </View>
       <StatusBar style="auto" />
     </DrawerLayoutAndroid>
@@ -140,6 +183,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
     alignItems: "center",
+  },
+
+  map: {
+    width: '100%',
+    height: '100%',
   },
   navigationContainer: {
     backgroundColor: "#ecf0f1",

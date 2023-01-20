@@ -81,7 +81,7 @@ export default function App(props) {
     setFinalContactList(contacts);
     setTimeout(() => {
       setShowSplashScreen(false)
-    }, 20000);
+    }, 2000);
   }, []);
 
   const handleSearchContact = (val) => {
