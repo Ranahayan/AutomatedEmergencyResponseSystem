@@ -19,6 +19,7 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import colors from "../Colors/colors";
+
 const Register = ({
   accountActionButtonColor,
   inputFields,

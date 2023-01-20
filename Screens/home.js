@@ -36,15 +36,15 @@ const Home = ({ navigation }) => {
   });
   const getUserLocation = async () => {
     try {
-      let { status } = await Location.requestPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert(
-          "Permission not granted",
-          "Allow the app to use location service.",
-          [{ text: "OK" }],
-          { cancelable: false }
-        );
-      }
+      // let { status } = await Location.requestPermissionsAsync();
+      // if (status !== "granted") {
+      //   Alert.alert(
+      //     "Permission not granted",
+      //     "Allow the app to use location service.",
+      //     [{ text: "OK" }],
+      //     { cancelable: false }
+      //   );
+      // }
       const currenLocation = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.High,
         timeout: 20000,

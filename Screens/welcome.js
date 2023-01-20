@@ -12,11 +12,9 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import {
-  MaterialCommunityIcons,
-  MaterialIcons,
-} from "@expo/vector-icons";
+import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import KeyBoardAvoidingWrapper from "../keyboardAvoidingWrapper";
+import * as Location from "expo-location";
 // import colors from "../Colors/colors";
 import Register from "./Register";
 const colors = {
@@ -25,9 +23,7 @@ const colors = {
   blueColor: "#0165FF",
 };
 
-
-
-const Welcome = ({navigation}) => {
+const Welcome = ({ navigation }) => {
   const [login, setlogin] = useState(true);
   const [signup, setsignup] = useState(false);
   const [show, setShow] = useState(true);
@@ -50,20 +46,31 @@ const Welcome = ({navigation}) => {
     console.log("value of toggle button", value);
     setSwitchvalue(value);
     setShowpopup(false);
-    navigation.navigate('Home')
+    navigation.navigate("Home");
+  };
+
+  const getPermission = async () => {
+    console.log("getPermission function is executing....");
+    try {
+      let { status } = await Location.getForegroundPermissionsAsync();
+      console.log(status);
+    } catch (error) {
+      console.log(error.message);
+      console.log("error");
+    }
   };
 
   const loginSubmit = () => {
     console.log(email);
     console.log(password);
     setShowpopup(!showpopup);
+    getPermission();
   };
 
   const backToLogin = () => {
     setlogin(!login);
     setsignup(false);
-
-  }
+  };
 
   return (
     <KeyBoardAvoidingWrapper>
@@ -174,7 +181,6 @@ const Welcome = ({navigation}) => {
     </KeyBoardAvoidingWrapper>
   );
 };
-
 
 const styles = StyleSheet.create({
   welcomeText: {
