@@ -79,11 +79,14 @@ const Register = ({
     const user = {
       ...data,
     };
-    user.key =
-      Math.random().toString(36).substring(2) +
-      new Date().getTime().toString(36);
-    handleAddUser(user);
-    navigation.goBack("");
+    console.log("user");
+
+    console.log(user);
+    // user.key =
+    //   Math.random().toString(36).substring(2) +
+    //   new Date().getTime().toString(36);
+    // handleAddUser(user);
+    // navigation.goBack("");
   };
 
   const handleUser = () => {
