@@ -46,13 +46,14 @@ const Welcome = ({ navigation }) => {
     console.log("value of toggle button", value);
     setSwitchvalue(value);
     setShowpopup(false);
+    getPermission();
     navigation.navigate("Home");
   };
 
   const getPermission = async () => {
     console.log("getPermission function is executing....");
     try {
-      let { status } = await Location.getForegroundPermissionsAsync();
+      let { status } = await Location.requestPermissionsAsync();
       console.log(status);
     } catch (error) {
       console.log(error.message);
@@ -64,7 +65,6 @@ const Welcome = ({ navigation }) => {
     console.log(email);
     console.log(password);
     setShowpopup(!showpopup);
-    getPermission();
   };
 
   const backToLogin = () => {
