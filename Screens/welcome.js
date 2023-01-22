@@ -1,286 +1,243 @@
-import React, { useState } from "react";
 import {
-  View,
-  Text,
   StyleSheet,
+  View,
+  Image,
   TextInput,
   TouchableOpacity,
-  Modal,
-  Switch,
+  StatusBar,
+  ActivityIndicator,
+  Button,
 } from "react-native";
+import {
+  FontAwesome,
+  FontAwesome5,
+  SimpleLineIcons,
+  Ionicons,
+} from "@expo/vector-icons";
+import colors from "../Colors/colors";
+import React, { useRef, useState, useEffect } from "react";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
-import KeyBoardAvoidingWrapper from "../keyboardAvoidingWrapper";
+import { useNavigation } from "@react-navigation/native";
+import { Accelerometer, Gyroscope } from "expo-sensors";
 import * as Location from "expo-location";
-// import colors from "../Colors/colors";
-import Register from "./Register";
-const colors = {
-  greyColor: "#474747",
-  background: "#FBFBFB",
-  blueColor: "#0165FF",
-};
+import MapView, { Marker } from "react-native-maps";
+import Drawer from "react-native-drawer";
+import DrawerContent from "./drawerContent";
 
-const Welcome = ({ navigation }) => {
-  const [login, setlogin] = useState(true);
-  const [signup, setsignup] = useState(false);
-  const [show, setShow] = useState(true);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showpopup, setShowpopup] = useState(false);
-  const [switchvalue, setSwitchvalue] = useState(false);
-  const showLogin = () => {
-    setlogin(true);
-    setsignup(false);
-  };
-  const showSignup = () => {
-    setlogin(false);
-    setsignup(true);
-  };
-  const eyeButtonClicked = () => {
-    setShow(!show);
-  };
-  const toggleSwitch = (value) => {
-    console.log("value of toggle button", value);
-    setSwitchvalue(value);
-    setShowpopup(false);
-    navigation.navigate("Home");
-  };
-
-  const getPermission = async () => {
-    console.log("getPermission function is executing....");
+const Home = () => {
+  const drawer = useRef(null);
+  const navigation = useNavigation();
+  const [loader, setLoader] = useState(true);
+  const [location, setLocation] = useState({});
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const getUserLocation = async () => {
     try {
-      let { status } = await Location.getForegroundPermissionsAsync();
-      console.log(status);
+      // let { status } = await Location.requestPermissionsAsync();
+      // if (status !== "granted") {
+      // Alert.alert(
+      // "Permission not granted",
+      // "Allow the app to use location service.",
+      // [{ text: "OK" }],
+      // { cancelable: false }
+      // );
+      // }
+      const currenLocation = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+        timeout: 20000,
+      });
+      console.log(currenLocation);
+      setLocation({
+        latitude: currenLocation.coords.latitude,
+        longitude: currenLocation.coords.longitude,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      });
+      setLoader(false);
     } catch (error) {
       console.log(error.message);
       console.log("error");
     }
   };
 
-  const loginSubmit = () => {
-    console.log(email);
-    console.log(password);
-    setShowpopup(!showpopup);
-    getPermission();
-  };
-
-  const backToLogin = () => {
-    setlogin(!login);
-    setsignup(false);
+  useEffect(() => {
+    getUserLocation();
+    // const accelerometerSubscription=Accelerometer.addListener(accelerometerData=>{
+    // console.log(accelerometerData);
+    // })
+    // const gyroscopeSubscription=Gyroscope.addListener(gyroscopeData=>{
+    // console.log("gyroscopeData",gyroscopeData);
+    // })
+  }, []);
+  const changeDrawerState = () => {
+    setDrawerOpen(!drawerOpen);
   };
 
   return (
-    <KeyBoardAvoidingWrapper>
-      <View>
-        <View style={styles.welcomeText}>
-          <Text style={styles.firstHeading}>Welcome Back</Text>
-          <Text style={styles.secondHeading}>Serves to save lives!</Text>
-        </View>
-        <View style={styles.accountButtons}>
-          <View
-            style={
-              login ? styles.showloginFormButton : styles.disableAccountButtons
-            }
-          >
-            <Text
-              style={
-                !login
-                  ? styles.disableAccountButtons
-                  : styles.accountsButtonColor
-              }
-              onPress={showLogin}
-            >
-              Login
-            </Text>
-          </View>
-          <View
-            style={
-              signup
-                ? styles.showSignupFormButton
-                : styles.disableAccountButtons
-            }
-          >
-            <Text
-              style={
-                !signup
-                  ? styles.disableAccountButtons
-                  : styles.accountsButtonColor
-              }
-              onPress={showSignup}
-            >
-              Register
-            </Text>
-          </View>
-        </View>
-        {login ? (
-          <View style={styles.loginForm}>
-            <View style={styles.loginInputs}>
-              <View style={styles.inputFields}>
-                <MaterialCommunityIcons
-                  name="email-outline"
-                  size={24}
-                  color="grey"
-                />
-                <TextInput
-                  placeholder="Email Address"
-                  style={styles.inputPlaceholder}
-                  onChangeText={(value) => setEmail(value)}
-                />
-              </View>
-              <View style={styles.inputFields}>
-                <MaterialIcons name="vpn-key" size={24} color="grey" />
-                <TextInput
-                  placeholder="Password"
-                  style={styles.passwordInput}
-                  secureTextEntry={show}
-                  onChangeText={(value) => setPassword(value)}
-                />
-                <TouchableOpacity onPress={eyeButtonClicked}>
-                  <MaterialCommunityIcons
-                    name={show === false ? "eye" : "eye-off-outline"}
-                    size={28}
-                    color="grey"
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-            <TouchableOpacity
-              style={styles.accountActionButton}
-              onPress={loginSubmit}
-            >
-              <Text style={styles.accountActionButtonColor}>Login</Text>
-            </TouchableOpacity>
-            <Modal
-              animationType="slide"
-              transparent={true}
-              visible={showpopup}
-              onRequestClose={() => {}}
-            >
-              <View style={styles.popupContainer}>
-                <View style={styles.popupContent}>
-                  <Text>Enable Accident Detection</Text>
-                  <Switch onValueChange={toggleSwitch} value={switchvalue} />
-                </View>
-              </View>
-            </Modal>
-          </View>
-        ) : (
-          <Register
-            accountActionButtonColor={styles.accountActionButtonColor}
-            accountActionButton={styles.accountActionButton}
-            inputFields={styles.inputFields}
-            passwordInput={styles.passwordInput}
-            inputPlaceholder={styles.inputPlaceholder}
-            backToLogin={backToLogin}
+    <Drawer
+      open={drawerOpen}
+      onClose={() => setDrawerOpen(false)}
+      onOpen={() => setDrawerOpen(true)}
+      type="overlay"
+      content={
+        <DrawerContent
+          styles={styles}
+          changeDrawerState={changeDrawerState}
+          navigation={navigation}
+        />
+      }
+      tapToClose={true}
+      openDrawerOffset={0.2}
+      panCloseMask={0.2}
+      closedDrawerOffset={-2}
+      styles={drawerStyles}
+      tweenHandler={(ratio) => ({
+        main: { opacity: (2 - ratio) / 2 },
+      })}
+    >
+      <View style={styles.container}>
+        {loader ? (
+          <ActivityIndicator
+            size={100}
+            color="#0165FF"
+            style={{
+              position: "absolute",
+              alignItems: "center",
+              justifyContent: "center",
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+            }}
           />
+        ) : (
+          <View>
+            <View>
+              <TouchableOpacity
+                style={styles.drawerIcon}
+                onPress={() => setDrawerOpen(!drawerOpen)}
+              >
+                <Ionicons name="menu" size={40} color={colors.grey} />
+              </TouchableOpacity>
+            </View>
+            <MapView style={styles.map} region={location}>
+              <Marker
+                coordinate={location}
+                title="My Location"
+                description="This is where I am currently located"
+              />
+            </MapView>
+          </View>
         )}
       </View>
-    </KeyBoardAvoidingWrapper>
+      <StatusBar style="auto" />
+    </Drawer>
   );
 };
 
+const drawerStyles = {
+  drawer: { shadowColor: "#000000", shadowOpacity: 0.8, shadowRadius: 3 },
+};
 const styles = StyleSheet.create({
-  welcomeText: {
-    marginTop: 120,
-    height: hp("10%"),
-    width: wp("100%"),
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+    // alignItems: "center",
   },
-  firstHeading: {
+
+  map: {
+    width: "100%",
+    height: "100%",
+  },
+  drawerIcon: { position: "absolute", left: 15, top: 10, zIndex: 2 },
+  navigationContainer: {
+    backgroundColor: "#ecf0f1",
+  },
+  paragraph: {
+    padding: 16,
+    fontSize: 15,
     textAlign: "center",
-    color: colors.greyColor,
-    fontWeight: "900",
-    fontSize: 30,
   },
-  secondHeading: {
-    textAlign: "center",
-    color: colors.blueColor,
-    fontWeight: "800",
-    fontSize: 20,
-    fontStyle: "italic",
+  userPic: {
+    marginTop: 20,
+    height: hp("20%"),
+    width: wp("38%"),
   },
-  accountButtons: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    marginTop: "20%",
-  },
-  showloginFormButton: {
-    width: wp("10%"),
-    borderBottomColor: "black",
-    borderBottomWidth: 2,
-  },
-  showSignupFormButton: {
-    width: wp("15%"),
-    borderBottomColor: "black",
-    borderBottomWidth: 2,
-    fontWeight: "bold",
-  },
-  accountsButtonColor: {
-    color: "#0165FF",
-    fontWeight: "900",
-  },
-  disableAccountButtons: {
-    color: colors.greyColor,
-    marginBottom: 1,
-  },
-  loginForm: {
+  profileForm: {
     flexDirection: "column",
     alignItems: "center",
+    justifyContent: "center",
     marginTop: "10%",
   },
-  loginInputs: {
+  parentIndividulFeild: { marginBottom: 25 },
+
+  profileInputs: {
     flexDirection: "column",
     justifyContent: "space-evenly",
-    height: hp("20%"),
   },
   inputFields: {
     flexDirection: "row",
     alignItems: "center",
-    width: wp("80%"),
+    width: wp("60%"),
     borderBottomColor: "grey",
     borderBottomWidth: 1,
+    marginBottom: 8,
+    flexWrap: "wrap",
   },
   inputPlaceholder: {
     fontSize: 18,
-    marginLeft: 5,
-    width: "90%",
+    color: "black",
+    width: wp("50%"),
   },
-  passwordInput: {
-    fontSize: 18,
-    marginLeft: 5,
-    width: "80%",
+  errorText: {
+    color: "red",
+    marginLeft: 10,
+    width: wp("60%"),
+    flexWrap: "wrap",
   },
-
-  accountActionButton: {
-    backgroundColor: colors.blueColor,
-    width: wp("80%"),
-    height: hp("6%"),
-    borderRadius: 20,
-    marginTop: 50,
-  },
-  accountActionButtonColor: {
-    color: "white",
-    textAlign: "center",
-    fontWeight: "bold",
-    lineHeight: hp("6%"),
-  },
-  popupContainer: {
-    flex: 1,
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
-  popupContent: {
-    width: wp("80%"),
-    height: hp("10%"),
-    marginBottom: hp("25%"),
-    borderRadius: 30,
-    backgroundColor: "#fff",
+  buttons: {
     flexDirection: "row",
-    justifyContent: "space-evenly",
-    alignItems: "center",
-    elevation: 5,
+    width: wp("100%"),
+    justifyContent: "flex-end",
+    marginVertical: 30,
+  },
+  appButtonCancel: {
+    borderRadius: 30,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderColor: colors.grey,
+    borderWidth: 2,
+    marginRight: 15,
+  },
+  appButtonSave: {
+    backgroundColor: "#0165FF",
+    borderRadius: 10,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    marginRight: 10,
+    borderRadius: 30,
+  },
+  appInButtonCancel: {
+    fontSize: 18,
+    color: colors.grey,
+    alignSelf: "center",
+    paddingHorizontal: 20,
+  },
+  appInButtonSave: {
+    fontSize: 18,
+    color: "#fff",
+    alignSelf: "center",
+    paddingHorizontal: 20,
+  },
+  icon: {
+    width: wp("7%"),
+  },
+  drawerBack: {
+    flexDirection: "row",
+    width: wp("65%"),
+    paddingTop: 10,
   },
 });
-export default Welcome;
+export default Home;
