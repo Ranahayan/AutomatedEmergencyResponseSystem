@@ -1,45 +1,40 @@
 import {
-  DrawerLayoutAndroid,
-  StyleSheet,
   View,
-  Image,
-  TextInput,
+  Text,
   TouchableOpacity,
   StatusBar,
   ActivityIndicator,
+  Modal,
 } from "react-native";
-import {
-  FontAwesome,
-  FontAwesome5,
-  SimpleLineIcons,
-  Ionicons,
-} from "@expo/vector-icons";
-import React, { useRef, useState, useEffect } from "react";
+import { Ionicons, Entypo } from "@expo/vector-icons";
 import colors from "../Colors/colors";
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
+import React, { useRef, useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Accelerometer, Gyroscope } from "expo-sensors";
 import * as Location from "expo-location";
 import MapView, { Marker } from "react-native-maps";
+import Drawer from "react-native-drawer";
+import DrawerContent from "./drawerContent";
+import styles from "./HomeStyle";
 
 const Home = () => {
   const drawer = useRef(null);
   const navigation = useNavigation();
   const [loader, setLoader] = useState(true);
   const [location, setLocation] = useState({});
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [showWarningAert, setWarningAlert] = useState(false);
+  const [showConfirmation, setConfirmation] = useState(false);
   const getUserLocation = async () => {
     try {
       // let { status } = await Location.requestPermissionsAsync();
       // if (status !== "granted") {
-      //   Alert.alert(
-      //     "Permission not granted",
-      //     "Allow the app to use location service.",
-      //     [{ text: "OK" }],
-      //     { cancelable: false }
-      //   );
+      // Alert.alert(
+      // "Permission not granted",
+      // "Allow the app to use location service.",
+      // [{ text: "OK" }],
+      // { cancelable: false }
+      // );
       // }
       const currenLocation = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.High,
@@ -62,225 +57,122 @@ const Home = () => {
   useEffect(() => {
     getUserLocation();
     // const accelerometerSubscription=Accelerometer.addListener(accelerometerData=>{
-    //   console.log(accelerometerData);
+    // console.log(accelerometerData);
     // })
     // const gyroscopeSubscription=Gyroscope.addListener(gyroscopeData=>{
-    //   console.log("gyroscopeData",gyroscopeData);
+    // console.log("gyroscopeData",gyroscopeData);
     // })
   }, []);
+  const changeDrawerState = () => {
+    setDrawerOpen(!drawerOpen);
+  };
 
-  const navigationView = () => (
-    <View style={styles.container}>
-      <View style={styles.drawerBack}>
-        <TouchableOpacity onPress={() => drawer.current.closeDrawer()}>
-          <Ionicons name="arrow-back" size={30} color={colors.grey} />
-        </TouchableOpacity>
-      </View>
-      <Image
-        style={styles.userPic}
-        source={require("../assets/user-pic.png")}
-      />
-      <View style={styles.profileForm}>
-        <View style={styles.profileInputs}>
-          <View style={styles.parentIndividulFeild}>
+  return (
+    <>
+      <Drawer
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        onOpen={() => setDrawerOpen(true)}
+        type="overlay"
+        content={
+          <DrawerContent
+            styles={styles}
+            changeDrawerState={changeDrawerState}
+            navigation={navigation}
+          />
+        }
+        tapToClose={true}
+        openDrawerOffset={0.2}
+        panCloseMask={0.2}
+        closedDrawerOffset={-2}
+        styles={styles.drawer}
+        tweenHandler={(ratio) => ({
+          main: { opacity: (2 - ratio) / 2 },
+        })}
+      >
+        <View style={styles.container}>
+          {loader ? (
+            <ActivityIndicator
+              size={100}
+              color="#0165FF"
+              style={styles.loaderStyle}
+            />
+          ) : (
+            <View>
+              <View>
+                <TouchableOpacity
+                  style={styles.drawerIcon}
+                  onPress={() => setDrawerOpen(!drawerOpen)}
+                >
+                  <Ionicons name="menu" size={40} color={colors.grey} />
+                </TouchableOpacity>
+              </View>
+              <MapView style={styles.map} region={location}>
+                <Marker
+                  coordinate={location}
+                  title="My Location"
+                  description="This is where I am currently located"
+                />
+              </MapView>
+            </View>
+          )}
+        </View>
+        <StatusBar style="auto" />
+      </Drawer>
+      {/*--------------------------------------------------------------------- Warning alert --------------------------------------------------*/}
+      <Modal transparent={true} visible={showWarningAert}>
+        <View style={styles.modalBackground}>
+          <View style={styles.warningModalBody}>
+            <View style={styles.warningModalDimension}>
+              <View style={styles.warningModalTop}>
+                <Ionicons name="warning-outline" size={24} color="black" />
+                <Text style={styles.warnigHeading}>WARNING !</Text>
+                <Ionicons name="warning-outline" size={24} color="black" />
+              </View>
+              <Text style={styles.warningMessageStyle}>Accident Detect</Text>
+              <View style={styles.warningModalTimer}>
+                <Text style={styles.warningMessageStyle}>10 Sec </Text>
+                <Entypo name="stopwatch" size={26} color="black" />
+              </View>
+              <Text>
+                <Text>Press </Text>
+                <Text style={{ fontWeight: "bold" }}>'CANCEL' </Text>
+                <Text>to Abord Sending</Text>
+              </Text>
+            </View>
             <TouchableOpacity
-              style={styles.inputFields}
-              onPress={() => {
-                drawer.current.closeDrawer();
-                navigation.navigate("Profile");
-              }}
+              style={styles.cancelWarningButton}
+              onPress={() => setWarningAlert(false)}
             >
-              <View style={styles.icon}>
-                <FontAwesome name="user" size={27} color={colors.grey} />
-              </View>
-              <TextInput
-                placeholder="Name"
-                style={styles.inputPlaceholder}
-                value={"Profile"}
-                editable={false}
-              />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.parentIndividulFeild}>
-            <TouchableOpacity
-              style={styles.inputFields}
-              onPress={() => navigation.navigate("Contacts")}
-            >
-              <View style={styles.icon}>
-                <FontAwesome name="users" size={22} color={colors.grey} />
-              </View>
-              <TextInput
-                placeholder="Contacts"
-                style={styles.inputPlaceholder}
-                value={"Contact List"}
-                editable={false}
-              />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.parentIndividulFeild}>
-            <TouchableOpacity style={styles.inputFields}>
-              <View style={styles.icon}>
-                <FontAwesome5 name="ambulance" size={21} color={colors.grey} />
-              </View>
-              <TextInput
-                placeholder="Request Emergency"
-                style={styles.inputPlaceholder}
-                value={"Request Emergency"}
-                editable={false}
-              />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.parentIndividulFeild}>
-            <TouchableOpacity style={styles.inputFields}>
-              <View style={styles.icon}>
-                <SimpleLineIcons name="logout" size={22} color={colors.grey} />
-              </View>
-              <TextInput
-                placeholder="Logout"
-                style={styles.inputPlaceholder}
-                value={"Logout"}
-                editable={false}
-              />
+              <Text style={styles.popButtons}>CANCEL</Text>
             </TouchableOpacity>
           </View>
         </View>
-      </View>
-    </View>
-  );
+      </Modal>
+      {/* -------------------------------------------------------------------End Warning Alert------------------------------------------------ */}
 
-  return (
-    <DrawerLayoutAndroid
-      ref={drawer}
-      drawerWidth={300}
-      drawerPosition="left"
-      renderNavigationView={navigationView}
-    >
-      <View style={styles.container}>
-        {loader ? (
-          <ActivityIndicator
-            size={100}
-            color="#0165FF"
-            style={{
-              position: "absolute",
-              alignItems: "center",
-              justifyContent: "center",
-              left: 0,
-              right: 0,
-              top: 0,
-              bottom: 0,
-            }}
-          />
-        ) : (
-          <MapView style={styles.map} region={location} >
-            <Marker
-              coordinate={location}
-              title="My Location"
-              description="This is where I am currently located"
-            />
-          </MapView>
-        )}
-      </View>
-      <StatusBar style="auto" />
-    </DrawerLayoutAndroid>
+      {/*--------------------------------------------------------------------- Confirmation alert --------------------------------------------------*/}
+      <Modal transparent={true} visible={showConfirmation}>
+        <View style={styles.modalBackground}>
+          <View style={styles.confirmModalBody}>
+            <View style={styles.confirmModalDimension}>
+              <Text style={{ textAlign: "center" }}>
+                Ambulance is on its way {"\n"}Please wait and don't panic {"\n"}
+                The help will arrive soon
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={styles.confirmButtonBackgroud}
+              onPress={() => setConfirmation(false)}
+            >
+              <Text style={styles.popButtons}>OKAY</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      {/*--------------------------------------------------------------------- End Confirmation alert --------------------------------------------------*/}
+    </>
   );
 };
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-    alignItems: "center",
-  },
 
-  map: {
-    width: "100%",
-    height: "100%",
-  },
-  navigationContainer: {
-    backgroundColor: "#ecf0f1",
-  },
-  paragraph: {
-    padding: 16,
-    fontSize: 15,
-    textAlign: "center",
-  },
-  userPic: {
-    marginTop: 20,
-    height: hp("20%"),
-    width: wp("38%"),
-  },
-  profileForm: {
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: "10%",
-  },
-  parentIndividulFeild: { marginBottom: 25 },
-
-  profileInputs: {
-    flexDirection: "column",
-    justifyContent: "space-evenly",
-  },
-  inputFields: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: wp("60%"),
-    borderBottomColor: "grey",
-    borderBottomWidth: 1,
-    marginBottom: 8,
-    flexWrap: "wrap",
-  },
-  inputPlaceholder: {
-    fontSize: 18,
-    color: "black",
-    width: wp("50%"),
-  },
-  errorText: {
-    color: "red",
-    marginLeft: 10,
-    width: wp("60%"),
-    flexWrap: "wrap",
-  },
-  buttons: {
-    flexDirection: "row",
-    width: wp("100%"),
-    justifyContent: "flex-end",
-    marginVertical: 30,
-  },
-  appButtonCancel: {
-    borderRadius: 30,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderColor: colors.grey,
-    borderWidth: 2,
-    marginRight: 15,
-  },
-  appButtonSave: {
-    backgroundColor: "#0165FF",
-    borderRadius: 10,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    marginRight: 10,
-    borderRadius: 30,
-  },
-  appInButtonCancel: {
-    fontSize: 18,
-    color: colors.grey,
-    alignSelf: "center",
-    paddingHorizontal: 20,
-  },
-  appInButtonSave: {
-    fontSize: 18,
-    color: "#fff",
-    alignSelf: "center",
-    paddingHorizontal: 20,
-  },
-  icon: {
-    width: wp("7%"),
-  },
-  drawerBack: {
-    flexDirection: "row",
-    width: wp("65%"),
-    paddingTop: 10,
-  },
-});
 export default Home;
