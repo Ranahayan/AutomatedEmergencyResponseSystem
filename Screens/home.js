@@ -1,13 +1,12 @@
 import {
-  Button,
   DrawerLayoutAndroid,
-  Text,
   StyleSheet,
   View,
   Image,
   TextInput,
   TouchableOpacity,
   StatusBar,
+  ActivityIndicator,
 } from "react-native";
 import {
   FontAwesome,
@@ -29,12 +28,8 @@ import MapView, { Marker } from "react-native-maps";
 const Home = () => {
   const drawer = useRef(null);
   const navigation = useNavigation();
-  const [location, setLocation] = useState({
-    latitude: 37.78825,
-    longitude: -122.4324,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  });
+  const [loader, setLoader] = useState(true);
+  const [location, setLocation] = useState({});
   const getUserLocation = async () => {
     try {
       // let { status } = await Location.requestPermissionsAsync();
@@ -57,6 +52,7 @@ const Home = () => {
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
       });
+      setLoader(false);
     } catch (error) {
       console.log(error.message);
       console.log("error");
@@ -160,13 +156,29 @@ const Home = () => {
       renderNavigationView={navigationView}
     >
       <View style={styles.container}>
-        <MapView style={styles.map} region={location}>
-          <Marker
-            coordinate={location}
-            title="My Location"
-            description="This is where I am currently located"
+        {loader ? (
+          <ActivityIndicator
+            size={100}
+            color="#0165FF"
+            style={{
+              position: "absolute",
+              alignItems: "center",
+              justifyContent: "center",
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+            }}
           />
-        </MapView>
+        ) : (
+          <MapView style={styles.map} region={location} >
+            <Marker
+              coordinate={location}
+              title="My Location"
+              description="This is where I am currently located"
+            />
+          </MapView>
+        )}
       </View>
       <StatusBar style="auto" />
     </DrawerLayoutAndroid>

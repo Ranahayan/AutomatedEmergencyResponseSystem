@@ -52,7 +52,7 @@ const Welcome = ({ navigation }) => {
   const getPermission = async () => {
     console.log("getPermission function is executing....");
     try {
-      let { status } = await Location.getForegroundPermissionsAsync();
+      let { status } = await Location.requestPermissionsAsync();
       console.log(status);
     } catch (error) {
       console.log(error.message);
