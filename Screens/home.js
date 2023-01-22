@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   StatusBar,
+  ActivityIndicator,
   Button,
 } from "react-native";
 import {
@@ -26,24 +27,22 @@ import MapView, { Marker } from "react-native-maps";
 import Drawer from "react-native-drawer";
 import DrawerContent from "./drawerContent";
 
-const Home = ({ navigation }) => {
+const Home = () => {
+  const drawer = useRef(null);
+  const navigation = useNavigation();
+  const [loader, setLoader] = useState(true);
+  const [location, setLocation] = useState({});
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [location, setLocation] = useState({
-    latitude: 37.78825,
-    longitude: -122.4324,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  });
   const getUserLocation = async () => {
     try {
       // let { status } = await Location.requestPermissionsAsync();
       // if (status !== "granted") {
-      //   Alert.alert(
-      //     "Permission not granted",
-      //     "Allow the app to use location service.",
-      //     [{ text: "OK" }],
-      //     { cancelable: false }
-      //   );
+      // Alert.alert(
+      // "Permission not granted",
+      // "Allow the app to use location service.",
+      // [{ text: "OK" }],
+      // { cancelable: false }
+      // );
       // }
       const currenLocation = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.High,
@@ -56,6 +55,7 @@ const Home = ({ navigation }) => {
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
       });
+      setLoader(false);
     } catch (error) {
       console.log(error.message);
       console.log("error");
@@ -65,10 +65,10 @@ const Home = ({ navigation }) => {
   useEffect(() => {
     getUserLocation();
     // const accelerometerSubscription=Accelerometer.addListener(accelerometerData=>{
-    //   console.log(accelerometerData);
+    // console.log(accelerometerData);
     // })
     // const gyroscopeSubscription=Gyroscope.addListener(gyroscopeData=>{
-    //   console.log("gyroscopeData",gyroscopeData);
+    // console.log("gyroscopeData",gyroscopeData);
     // })
   }, []);
   const changeDrawerState = () => {
@@ -98,21 +98,39 @@ const Home = ({ navigation }) => {
       })}
     >
       <View style={styles.container}>
-        <View>
-          <TouchableOpacity
-            style={styles.drawerIcon}
-            onPress={() => setDrawerOpen(!drawerOpen)}
-          >
-            <Ionicons name="menu" size={40} color={colors.grey} />
-          </TouchableOpacity>
-        </View>
-        <MapView style={styles.map} region={location}>
-          <Marker
-            coordinate={location}
-            title="My Location"
-            description="This is where I am currently located"
+        {loader ? (
+          <ActivityIndicator
+            size={100}
+            color="#0165FF"
+            style={{
+              position: "absolute",
+              alignItems: "center",
+              justifyContent: "center",
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+            }}
           />
-        </MapView>
+        ) : (
+          <View>
+            <View>
+              <TouchableOpacity
+                style={styles.drawerIcon}
+                onPress={() => setDrawerOpen(!drawerOpen)}
+              >
+                <Ionicons name="menu" size={40} color={colors.grey} />
+              </TouchableOpacity>
+            </View>
+            <MapView style={styles.map} region={location}>
+              <Marker
+                coordinate={location}
+                title="My Location"
+                description="This is where I am currently located"
+              />
+            </MapView>
+          </View>
+        )}
       </View>
       <StatusBar style="auto" />
     </Drawer>
