@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
   },
   cancelWarningButton: {
     backgroundColor: "#0165FF",
-    width: wp("72.5%"),
+    width: wp("76%"),
     height: hp("8%"),
     borderRadius: 8,
   },
@@ -175,12 +175,17 @@ const styles = StyleSheet.create({
   },
   confirmButtonBackgroud: {
     backgroundColor: "#0165FF",
-    width: wp("72.5%"),
+    width: wp("76%"),
     height: hp("8%"),
     borderRadius: 10,
     marginTop: -350,
   },
-  popButtons: { color: "white", textAlign: "center", lineHeight: hp("8%") },
+  popButtons: {
+    color: "white",
+    textAlign: "center",
+    lineHeight: hp("8%"),
+    
+  },
 });
 
 export default styles;

@@ -18,7 +18,6 @@ import DrawerContent from "./drawerContent";
 import styles from "./HomeStyle";
 
 const Home = () => {
-  const drawer = useRef(null);
   const navigation = useNavigation();
   const [loader, setLoader] = useState(true);
   const [location, setLocation] = useState({});
@@ -26,8 +25,9 @@ const Home = () => {
   const [showWarningAert, setWarningAlert] = useState(false);
   const [showConfirmation, setConfirmation] = useState(false);
   const [acceleration, setAcceleration] = useState(0);
-  const [angularVelocity, setAngularVelocity] = useState(0);
   const [accidentDetected, setAccidentDetected] = useState(false);
+  const [timer, setTimer] = useState(0);
+  const [cancelTimer, setCancelTimer] = useState(false);
   const getUserLocation = async () => {
     try {
       // let { status } = await Location.requestPermissionsAsync();
@@ -58,29 +58,62 @@ const Home = () => {
   };
 
   useEffect(() => {
+    if (accidentDetected) return;
     getUserLocation();
+
     const accelerometerSubscription = Accelerometer.addListener(
       (accelerometerData) => {
-        const overallAcceleration = Math.sqrt(
+        let overallAcceleration = Math.sqrt(
           Math.pow(accelerometerData.x, 2) +
             Math.pow(accelerometerData.y, 2) +
             Math.pow(accelerometerData.z, 2)
         );
-        console.log("AccelerometerRawdata", accelerometerData);
-        console.log("AccelerometerCAlculatedAcceleration", overallAcceleration);
-        console.log("AccelerometerGforce", overallAcceleration / 9.8);
-        if (overallAcceleration > 1) accelerometerSubscription.remove();
+        overallAcceleration = overallAcceleration / 9.8;
+        console.log(overallAcceleration);
+
         setAcceleration(overallAcceleration);
       }
     );
-    // const gyroscopeSubscription = Gyroscope.addListener((gyroscopeData) => {
-    //   console.log("gyroscopeData", gyroscopeData);
-    // });
+    const gyroscopeSubscription = Gyroscope.addListener((gyroscopeData) => {
+      console.log("gyroscopeData", gyroscopeData);
+    });
     return () => {
       accelerometerSubscription.remove();
-      gyroscopeSubscription.remove();
+      // gyroscopeSubscription.remove();
     };
-  }, []);
+  }, [accidentDetected]);
+
+  useEffect(() => {
+    // if (acceleration > 0.12) {
+    console.log("first");
+    setTimer(5);
+    setAccidentDetected(true);
+    // }
+  }, [acceleration]);
+
+  useEffect(() => {
+    console.log("second");
+
+    setWarningAlert(true);
+    let interval;
+    if (timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prevTimer) => prevTimer - 1);
+      }, 1000);
+    } else {
+      setConfirmation(false);
+      console.log(showConfirmation);
+
+      setWarningAlert(false);
+      if (!cancelTimer) {
+        console.log("csnace;");
+        setConfirmation(true);
+      }
+    }
+    return () => {
+      clearInterval(interval);
+    };
+  }, [timer]);
   const changeDrawerState = () => {
     setDrawerOpen(!drawerOpen);
   };
@@ -149,7 +182,7 @@ const Home = () => {
               </View>
               <Text style={styles.warningMessageStyle}>Accident Detect</Text>
               <View style={styles.warningModalTimer}>
-                <Text style={styles.warningMessageStyle}>10 Sec </Text>
+                <Text style={styles.warningMessageStyle}>{timer} </Text>
                 <Entypo name="stopwatch" size={26} color="black" />
               </View>
               <Text>
@@ -160,7 +193,10 @@ const Home = () => {
             </View>
             <TouchableOpacity
               style={styles.cancelWarningButton}
-              onPress={() => setWarningAlert(false)}
+              onPress={() => {
+                setCancelTimer(true);
+                setTimer(0);
+              }}
             >
               <Text style={styles.popButtons}>CANCEL</Text>
             </TouchableOpacity>
