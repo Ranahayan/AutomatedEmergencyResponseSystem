@@ -25,6 +25,9 @@ const Home = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [showWarningAert, setWarningAlert] = useState(false);
   const [showConfirmation, setConfirmation] = useState(false);
+  const [acceleration, setAcceleration] = useState(0);
+  const [angularVelocity, setAngularVelocity] = useState(0);
+  const [accidentDetected, setAccidentDetected] = useState(false);
   const getUserLocation = async () => {
     try {
       // let { status } = await Location.requestPermissionsAsync();
@@ -56,12 +59,27 @@ const Home = () => {
 
   useEffect(() => {
     getUserLocation();
-    // const accelerometerSubscription=Accelerometer.addListener(accelerometerData=>{
-    // console.log(accelerometerData);
-    // })
-    // const gyroscopeSubscription=Gyroscope.addListener(gyroscopeData=>{
-    // console.log("gyroscopeData",gyroscopeData);
-    // })
+    const accelerometerSubscription = Accelerometer.addListener(
+      (accelerometerData) => {
+        const overallAcceleration = Math.sqrt(
+          Math.pow(accelerometerData.x, 2) +
+            Math.pow(accelerometerData.y, 2) +
+            Math.pow(accelerometerData.z, 2)
+        );
+        console.log("AccelerometerRawdata", accelerometerData);
+        console.log("AccelerometerCAlculatedAcceleration", overallAcceleration);
+        console.log("AccelerometerGforce", overallAcceleration / 9.8);
+        if (overallAcceleration > 1) accelerometerSubscription.remove();
+        setAcceleration(overallAcceleration);
+      }
+    );
+    // const gyroscopeSubscription = Gyroscope.addListener((gyroscopeData) => {
+    //   console.log("gyroscopeData", gyroscopeData);
+    // });
+    return () => {
+      accelerometerSubscription.remove();
+      gyroscopeSubscription.remove();
+    };
   }, []);
   const changeDrawerState = () => {
     setDrawerOpen(!drawerOpen);
