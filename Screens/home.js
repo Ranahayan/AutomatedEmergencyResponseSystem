@@ -24,7 +24,7 @@ const Home = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [showWarningAert, setWarningAlert] = useState(false);
   const [showConfirmation, setConfirmation] = useState(false);
-  const [acceleration, setAcceleration] = useState(0);
+  const [acceleration, setAcceleration] = useState(null);
   const [accidentDetected, setAccidentDetected] = useState(false);
   const [timer, setTimer] = useState(0);
   const [cancelTimer, setCancelTimer] = useState(false);
@@ -84,11 +84,11 @@ const Home = () => {
   }, [accidentDetected]);
 
   useEffect(() => {
-    // if (acceleration > 0.12) {
-    console.log("first");
-    setTimer(5);
-    setAccidentDetected(true);
-    // }
+    if (acceleration > 0.1) {
+      console.log("firstfirst");
+      setTimer(5);
+      setAccidentDetected(true);
+    }
   }, [acceleration]);
 
   useEffect(() => {
@@ -103,9 +103,8 @@ const Home = () => {
     } else {
       setConfirmation(false);
       console.log(showConfirmation);
-
       setWarningAlert(false);
-      if (!cancelTimer) {
+      if (!cancelTimer && acceleration) {
         console.log("csnace;");
         setConfirmation(true);
       }
