@@ -16,7 +16,6 @@ import MapView, { Marker } from "react-native-maps";
 import Drawer from "react-native-drawer";
 import DrawerContent from "./drawerContent";
 import styles from "./HomeStyle";
-
 const Home = () => {
   const navigation = useNavigation();
   const [loader, setLoader] = useState(true);
@@ -28,39 +27,38 @@ const Home = () => {
   const [accidentDetected, setAccidentDetected] = useState(false);
   const [timer, setTimer] = useState(0);
   const [cancelTimer, setCancelTimer] = useState(false);
+
   const getUserLocation = async () => {
     try {
-      // let { status } = await Location.requestPermissionsAsync();
-      // if (status !== "granted") {
-      // Alert.alert(
-      // "Permission not granted",
-      // "Allow the app to use location service.",
-      // [{ text: "OK" }],
-      // { cancelable: false }
-      // );
-      // }
-      const currenLocation = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.High,
-        timeout: 20000,
-      });
-      console.log(currenLocation);
-      setLocation({
-        latitude: currenLocation.coords.latitude,
-        longitude: currenLocation.coords.longitude,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
-      });
-      setLoader(false);
+      const backgroundPermission =
+        await Location.requestBackgroundPermissionsAsync();
+      if (backgroundPermission.status === "granted") {
+        const currentLocation = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.High,
+          timeout: 20000,
+        });
+        console.log(currentLocation);
+        setLocation({
+          latitude: currentLocation.coords.latitude,
+          longitude: currentLocation.coords.longitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        });
+        setLoader(false);
+      } else {
+        console.log("Foreground location permission not granted");
+      }
     } catch (error) {
       console.log(error.message);
-      console.log("error");
+      console.log("Error while getting location");
     }
   };
 
   useEffect(() => {
+    console.log("first useEffect");
     if (accidentDetected) return;
     getUserLocation();
-
+    Accelerometer.setUpdateInterval(16);
     const accelerometerSubscription = Accelerometer.addListener(
       (accelerometerData) => {
         let overallAcceleration = Math.sqrt(
@@ -69,8 +67,7 @@ const Home = () => {
             Math.pow(accelerometerData.z, 2)
         );
         overallAcceleration = overallAcceleration / 9.8;
-        console.log(overallAcceleration);
-
+        console.log("AccelerometerData", overallAcceleration);
         setAcceleration(overallAcceleration);
       }
     );
@@ -79,14 +76,15 @@ const Home = () => {
     });
     return () => {
       accelerometerSubscription.remove();
-      // gyroscopeSubscription.remove();
+      gyroscopeSubscription.remove();
     };
-  }, [accidentDetected]);
+  }, []);
 
   useEffect(() => {
-    if (acceleration > 0.1) {
+    if (acceleration > 1) {
       console.log("firstfirst");
       setTimer(5);
+      // getUserLocation();
       setAccidentDetected(true);
     }
   }, [acceleration]);
@@ -113,6 +111,7 @@ const Home = () => {
       clearInterval(interval);
     };
   }, [timer]);
+
   const changeDrawerState = () => {
     setDrawerOpen(!drawerOpen);
   };

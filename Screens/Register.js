@@ -111,16 +111,18 @@ const Register = ({
     return errors;
   };
 
-  const handleOnChange = (name) => (value) => {
-    let newErrors = { ...errors };
-    let newMessage = handleOnSaveErrors(value, name);
-    if (newMessage) newErrors[name] = newMessage;
-    else delete newErrors[name];
-    let newData = { ...data };
-    newData[name] = value;
-    setData(newData);
-    setErrors(newErrors);
-  };
+  const handleOnChange =
+    (name) =>
+    ({ value } = event.target) => {
+      let newErrors = { ...errors };
+      let newMessage = handleOnSaveErrors(value, name);
+      if (newMessage) newErrors[name] = newMessage;
+      else delete newErrors[name];
+      let newData = { ...data };
+      newData[name] = value;
+      setData(newData);
+      setErrors(newErrors);
+    };
 
   const handleOnSaveErrors = (value, name) => {
     const toBeValidate = { [name]: value };
