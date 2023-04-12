@@ -10,7 +10,7 @@ import { Ionicons, Entypo } from "@expo/vector-icons";
 import colors from "../Colors/colors";
 import React, { useRef, useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { Accelerometer, Gyroscope } from "expo-sensors";
+import { Accelerometer, Gyroscope, DeviceMotion } from "expo-sensors";
 import * as Location from "expo-location";
 import MapView, { Marker } from "react-native-maps";
 import Drawer from "react-native-drawer";
@@ -56,6 +56,10 @@ const Home = () => {
 
   useEffect(() => {
     console.log("first useEffect");
+
+    DeviceMotion.isAvailableAsync().then((isAvailable) => {
+      console.log("rhis is true");
+    });
     if (accidentDetected) return;
     getUserLocation();
     Accelerometer.setUpdateInterval(16);
@@ -68,15 +72,15 @@ const Home = () => {
         );
         overallAcceleration = overallAcceleration / 9.8;
         console.log("AccelerometerData", overallAcceleration);
-        setAcceleration(overallAcceleration);
+        // setAcceleration(overallAcceleration);
       }
     );
-    const gyroscopeSubscription = Gyroscope.addListener((gyroscopeData) => {
+    Gyroscope.addListener((gyroscopeData) => {
       console.log("gyroscopeData", gyroscopeData);
     });
     return () => {
-      accelerometerSubscription.remove();
-      gyroscopeSubscription.remove();
+      // accelerometerSubscription.remove();
+      Gyroscope.removeAllListeners();
     };
   }, []);
 

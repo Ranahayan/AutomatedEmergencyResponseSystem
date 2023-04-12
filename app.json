@@ -30,7 +30,10 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "permissions": [
+        "GYROSCOPE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
