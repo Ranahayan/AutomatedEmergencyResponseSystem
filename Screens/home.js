@@ -31,7 +31,7 @@ const Home = () => {
   const getUserLocation = async () => {
     try {
       const backgroundPermission =
-        await Location.requestBackgroundPermissionsAsync();
+        await Location.requestForegroundPermissionsAsync();
       if (backgroundPermission.status === "granted") {
         const currentLocation = await Location.getCurrentPositionAsync({
           accuracy: Location.Accuracy.High,

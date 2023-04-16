@@ -1,6 +1,5 @@
 const winston = require("winston");
 const { createLogger, transports, format } = winston;
-
 const MongoDB = require("winston-mongodb").MongoDB;
 
 const logger = createLogger({
@@ -23,7 +22,7 @@ const logger = createLogger({
       format: winston.format.simple(),
     }),
     new MongoDB({
-      db: "mongodb://localhost/AutomatedEmergencyResponseSystem",
+      db: "mongodb://0.0.0.0:27017/FYP",
       level: "info",
     }),
   ],
@@ -36,7 +35,7 @@ const logger = createLogger({
       format: winston.format.simple(),
     }),
     new MongoDB({
-      db: "mongodb://localhost/AutomatedEmergencyResponseSystem",
+      db: "mongodb://0.0.0.0:27017/FYP",
       level: "info",
     }),
   ],
