@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Modal,
   Switch,
+  TouchableWithoutFeedback,
 } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -15,8 +16,10 @@ import {
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import KeyBoardAvoidingWrapper from "../keyboardAvoidingWrapper";
 import * as Location from "expo-location";
+const Joi = require("joi-browser");
 // import colors from "../Colors/colors";
 import Register from "./Register";
+import axios from "axios";
 const colors = {
   greyColor: "#474747",
   background: "#FBFBFB",
@@ -27,10 +30,81 @@ const Welcome = ({ navigation }) => {
   const [login, setlogin] = useState(true);
   const [signup, setsignup] = useState(false);
   const [show, setShow] = useState(true);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [showpopup, setShowpopup] = useState(false);
   const [switchvalue, setSwitchvalue] = useState(false);
+
+  const [data, setData] = useState({
+    email: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState({});
+
+  const conditions = {
+    email: Joi.string()
+      .email({
+        minDomainSegments: 2,
+        tlds: { allow: ["com", "net"] },
+      })
+      .required()
+      .label("Email"),
+    password: Joi.string().required().label("Password"),
+  };
+
+  const schema = Joi.object(conditions);
+
+  const submitUser = () => {
+    const user = {
+      ...data,
+    };
+    console.log("user");
+    console.log(user);
+    setShowpopup(!showpopup);
+    // user.key =
+    //   Math.random().toString(36).substring(2) +
+    //   new Date().getTime().toString(36);
+    // handleAddUser(user);
+    // navigation.goBack("");
+  };
+
+  const handleUser = () => {
+    const errors = handleErrors();
+    setErrors(errors || {});
+    if (errors) return;
+    submitUser();
+  };
+
+  const handleErrors = () => {
+    const user = {
+      ...data,
+    };
+    const { error } = schema.validate(user, {
+      abortEarly: false,
+    });
+    if (!error) return null;
+    const errors = {};
+    for (let item of error.details) {
+      errors[item.path[0]] = item.message;
+    }
+    return errors;
+  };
+
+  const handleOnChange = (name) => (value) => {
+    let newErrors = { ...errors };
+    let newMessage = handleOnSaveErrors(value, name);
+    if (newMessage) newErrors[name] = newMessage;
+    else delete newErrors[name];
+    let newData = { ...data };
+    newData[name] = value;
+    setData(newData);
+    setErrors(newErrors);
+  };
+
+  const handleOnSaveErrors = (value, name) => {
+    const toBeValidate = { [name]: value };
+    const OnSaveSchema = Joi.object({ [name]: conditions[name] });
+    const { error } = OnSaveSchema.validate(toBeValidate);
+    return error ? error.details[0].message : null;
+  };
   const showLogin = () => {
     setlogin(true);
     setsignup(false);
@@ -49,11 +123,10 @@ const Welcome = ({ navigation }) => {
     getPermission();
     navigation.navigate("Home");
   };
-
   const getPermission = async () => {
     console.log("getPermission function is executing....");
     try {
-      let { status } = await Location.requestPermissionsAsync();
+      let { status } = await Location.requestForegroundPermissionsAsync();
       console.log(status);
     } catch (error) {
       console.log(error.message);
@@ -61,9 +134,18 @@ const Welcome = ({ navigation }) => {
     }
   };
 
-  const loginSubmit = () => {
-    console.log(email);
-    console.log(password);
+  const loginSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      let response = await axios.post("http://10.5.29.136:4000/auth/login", {
+        email,
+        password,
+      });
+      console.log(response);
+    } catch (error) {
+      console.log("This eRROr", error.message);
+    }
+    console.log(showpopup);
     setShowpopup(!showpopup);
   };
 
@@ -118,38 +200,51 @@ const Welcome = ({ navigation }) => {
         {login ? (
           <View style={styles.loginForm}>
             <View style={styles.loginInputs}>
-              <View style={styles.inputFields}>
-                <MaterialCommunityIcons
-                  name="email-outline"
-                  size={24}
-                  color="grey"
-                />
-                <TextInput
-                  placeholder="Email Address"
-                  style={styles.inputPlaceholder}
-                  onChangeText={(value) => setEmail(value)}
-                />
-              </View>
-              <View style={styles.inputFields}>
-                <MaterialIcons name="vpn-key" size={24} color="grey" />
-                <TextInput
-                  placeholder="Password"
-                  style={styles.passwordInput}
-                  secureTextEntry={show}
-                  onChangeText={(value) => setPassword(value)}
-                />
-                <TouchableOpacity onPress={eyeButtonClicked}>
+              <View>
+                <View style={styles.inputFields}>
                   <MaterialCommunityIcons
-                    name={show === false ? "eye" : "eye-off-outline"}
-                    size={28}
+                    name="email-outline"
+                    size={24}
                     color="grey"
                   />
-                </TouchableOpacity>
+                  <TextInput
+                    placeholder="Email Address"
+                    style={styles.inputPlaceholder}
+                    value={data.email}
+                    onChangeText={handleOnChange("email")}
+                  />
+                </View>
+                {errors.email ? (
+                  <Text style={styles.errorText}>{errors.email}</Text>
+                ) : null}
+              </View>
+              <View>
+                <View style={styles.inputFields}>
+                  <MaterialIcons name="vpn-key" size={24} color="grey" />
+                  <TextInput
+                    placeholder="Password"
+                    style={styles.passwordInput}
+                    secureTextEntry={show}
+                    value={data.password}
+                    onChangeText={handleOnChange("password")}
+                  />
+                  <TouchableOpacity onPress={eyeButtonClicked}>
+                    <MaterialCommunityIcons
+                      name={show === false ? "eye" : "eye-off-outline"}
+                      size={28}
+                      color="grey"
+                    />
+                  </TouchableOpacity>
+                </View>
+                {errors.password ? (
+                  <Text style={styles.errorText}>{errors.password}</Text>
+                ) : null}
               </View>
             </View>
             <TouchableOpacity
               style={styles.accountActionButton}
-              onPress={loginSubmit}
+              onPress={handleUser}
+              disabled={handleErrors() ? true : false}
             >
               <Text style={styles.accountActionButtonColor}>Login</Text>
             </TouchableOpacity>
@@ -159,12 +254,14 @@ const Welcome = ({ navigation }) => {
               visible={showpopup}
               onRequestClose={() => {}}
             >
-              <View style={styles.popupContainer}>
-                <View style={styles.popupContent}>
-                  <Text>Enable Accident Detection</Text>
-                  <Switch onValueChange={toggleSwitch} value={switchvalue} />
+              <TouchableWithoutFeedback onPress={() => setShowpopup(false)}>
+                <View style={styles.popupContainer}>
+                  <View style={styles.popupContent}>
+                    <Text>Enable Accident Detection</Text>
+                    <Switch onValueChange={toggleSwitch} value={switchvalue} />
+                  </View>
                 </View>
-              </View>
+              </TouchableWithoutFeedback>
             </Modal>
           </View>
         ) : (
@@ -207,12 +304,12 @@ const styles = StyleSheet.create({
     marginTop: "20%",
   },
   showloginFormButton: {
-    width: wp("10%"),
+    width: wp("11%"),
     borderBottomColor: "black",
     borderBottomWidth: 2,
   },
   showSignupFormButton: {
-    width: wp("15%"),
+    width: wp("16%"),
     borderBottomColor: "black",
     borderBottomWidth: 2,
     fontWeight: "bold",
@@ -281,6 +378,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     alignItems: "center",
     elevation: 5,
+  },
+  errorText: {
+    color: "red",
+    marginLeft: 10,
+    width: wp("60%"),
+    flexWrap: "wrap",
   },
 });
 export default Welcome;

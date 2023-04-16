@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
   inputFields: {
     flexDirection: "row",
     alignItems: "center",
-    width: wp("80%"),
+    width: wp("82%"),
     borderBottomColor: "grey",
     borderBottomWidth: 1,
     marginBottom: 8,
