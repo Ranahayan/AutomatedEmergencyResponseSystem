@@ -56,7 +56,49 @@ const loginuser = async (req, res) => {
   }
 };
 
+//controller to get current user data
+
+const getUser = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error });
+  }
+};
+
+//controller to updata single user
+
+const updateUser = async (req, res) => {
+  const id = req.params.id;
+  const { _id, password } = req.body;
+  if (id === _id) {
+    try {
+      if (password) {
+        const salt = await bcrypt.genSalt(10);
+        req.body.password = await bcrypt.hash(password, salt);
+      }
+      const user = await User.findByIdAndUpdate(id, req.body, {
+        new: true,
+      });
+
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  } else {
+    res.status(403).json("Access Denied! you can only update your own profile");
+  }
+};
+
 module.exports = {
   registeruser,
   loginuser,
+  updateUser,
+  getUser,
 };
