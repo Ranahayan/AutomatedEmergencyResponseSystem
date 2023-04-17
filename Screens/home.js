@@ -16,6 +16,8 @@ import MapView, { Marker } from "react-native-maps";
 import Drawer from "react-native-drawer";
 import DrawerContent from "./drawerContent";
 import styles from "./HomeStyle";
+const MapboxAccessToken =
+  "pk.eyJ1IjoiaGF5YW4yMzciLCJhIjoiY2xnbDlhd2Y4MGticTNzcXFnazllNnRwaCJ9.JOGi0VKwVN1pc7gjas-DTQ";
 const Home = () => {
   const navigation = useNavigation();
   const [loader, setLoader] = useState(true);
@@ -54,6 +56,22 @@ const Home = () => {
     }
   };
 
+  const checkIfLocationOnRoad = async () => {
+    try {
+      const response = await fetch(
+        `https://api.mapbox.com/matching/v5/mapbox/driving/${location.longitude},${location.latitude};${location.longitude},${location.latitude}?access_token=${MapboxAccessToken}`
+      );
+      console.log(response)
+      const data = await response.json();
+      const isOnRoad = data.matchings[0].confidence > 0.5;
+      console.log("is on road");
+      return isOnRoad;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  };
+
   useEffect(() => {
     console.log("first useEffect");
 
@@ -62,6 +80,7 @@ const Home = () => {
     });
     if (accidentDetected) return;
     getUserLocation();
+
     Accelerometer.setUpdateInterval(16);
     const accelerometerSubscription = Accelerometer.addListener(
       (accelerometerData) => {
@@ -72,7 +91,7 @@ const Home = () => {
         );
         overallAcceleration = overallAcceleration / 9.8;
         console.log("AccelerometerData", overallAcceleration);
-        // setAcceleration(overallAcceleration);
+        setAcceleration(overallAcceleration);
       }
     );
     Gyroscope.addListener((gyroscopeData) => {
@@ -85,11 +104,15 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    if (acceleration > 1) {
+    if (acceleration > 0.18) {
       console.log("firstfirst");
       setTimer(5);
-      // getUserLocation();
-      setAccidentDetected(true);
+      getUserLocation();
+      const isOnRoad = checkIfLocationOnRoad();
+      if (isOnRoad) {
+        setAccidentDetected(true);
+        console.log("Accident detected");
+      }
     }
   }, [acceleration]);
 
