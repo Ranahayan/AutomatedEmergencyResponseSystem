@@ -5,6 +5,7 @@ import {
   StatusBar,
   ActivityIndicator,
   Modal,
+  AppState,
 } from "react-native";
 import { Ionicons, Entypo } from "@expo/vector-icons";
 import colors from "../Colors/colors";
@@ -17,11 +18,31 @@ import Drawer from "react-native-drawer";
 import DrawerContent from "./drawerContent";
 import styles from "./HomeStyle";
 const MapboxAccessToken =
-  "pk.eyJ1IjoiaGF5YW4yMzciLCJhIjoiY2xnbDlhd2Y4MGticTNzcXFnazllNnRwaCJ9.JOGi0VKwVN1pc7gjas-DTQ";
+  "pk.eyJ1IjoiaGF5YW4yMzciLCJhIjoiY2xoMzdjcWpkMTBvdDNkb2g5c2w2eWFwdyJ9.rrOhnjh45HPyEQ2c-jTISQ";
+
+import * as TaskManager from "expo-task-manager";
+const ACCELEROMETER_TASK_NAME = "accelerometerTask";
+
+TaskManager.defineTask(ACCELEROMETER_TASK_NAME, async ({ data, error }) => {
+  if (error) {
+    console.log("Accelerometer task encountered an error:", error);
+    return;
+  }
+  if (data) {
+    const { x, y, z } = data.accelerometerData;
+    let overallAcceleration =
+      Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2)) / 9.8;
+    console.log("AccelerometerData", overallAcceleration);
+  }
+});
+
 const Home = () => {
   const navigation = useNavigation();
   const [loader, setLoader] = useState(true);
-  const [location, setLocation] = useState({});
+  const [location, setLocation] = useState({
+    longitude: 74.35016962092465,
+    latitude: 31.578248288521614,
+  });
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [showWarningAert, setWarningAlert] = useState(false);
   const [showConfirmation, setConfirmation] = useState(false);
@@ -57,30 +78,60 @@ const Home = () => {
   };
 
   const checkIfLocationOnRoad = async () => {
+    const url = `https://api.mapbox.com/matching/v5/mapbox/driving/${location.longitude},${location.latitude};${location.longitude},${location.latitude}?access_token=${MapboxAccessToken}`;
+    let isOnRoad = false;
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        // Check if user is on the road
+        console.log("data recieved is: ", data);
+        console.log(data);
+        if (data.code === "Ok") {
+          isOnRoad = true;
+        }
+      })
+      .catch((error) => {});
+    return isOnRoad;
+  };
+
+  const startAccelerometerTask = async () => {
+    const taskRegistered = await TaskManager.isTaskRegisteredAsync(
+      ACCELEROMETER_TASK_NAME
+    );
+    if (taskRegistered) {
+      console.log(`Task ${ACCELEROMETER_TASK_NAME} is already registered.`);
+      return;
+    }
     try {
-      const response = await fetch(
-        `https://api.mapbox.com/matching/v5/mapbox/driving/${location.longitude},${location.latitude};${location.longitude},${location.latitude}?access_token=${MapboxAccessToken}`
-      );
-      console.log(response)
-      const data = await response.json();
-      const isOnRoad = data.matchings[0].confidence > 0.5;
-      console.log("is on road");
-      return isOnRoad;
-    } catch (error) {
-      console.error(error);
-      return false;
+      await TaskManager.getRegisteredTasksAsync([
+        {
+          taskName: ACCELEROMETER_TASK_NAME,
+          options: {
+            accelerometerData: {},
+            interval: 1000,
+          },
+        },
+      ]);
+      console.log(`Task ${ACCELEROMETER_TASK_NAME} registered.`);
+    } catch (err) {
+      console.log(`Failed to register task ${ACCELEROMETER_TASK_NAME}.`, err);
+    }
+  };
+
+  const stopAccelerometerTask = async () => {
+    try {
+      await TaskManager.unregisterTaskAsync(ACCELEROMETER_TASK_NAME);
+      console.log(`Task ${ACCELEROMETER_TASK_NAME} unregistered.`);
+    } catch (err) {
+      console.log(`Failed to unregister task ${ACCELEROMETER_TASK_NAME}.`, err);
     }
   };
 
   useEffect(() => {
-    console.log("first useEffect");
-
-    DeviceMotion.isAvailableAsync().then((isAvailable) => {
-      console.log("rhis is true");
-    });
+    console.log("First useEffect");
     if (accidentDetected) return;
     getUserLocation();
-
+    startAccelerometerTask();
     Accelerometer.setUpdateInterval(16);
     const accelerometerSubscription = Accelerometer.addListener(
       (accelerometerData) => {
@@ -94,26 +145,38 @@ const Home = () => {
         setAcceleration(overallAcceleration);
       }
     );
-    Gyroscope.addListener((gyroscopeData) => {
-      console.log("gyroscopeData", gyroscopeData);
-    });
+
     return () => {
-      // accelerometerSubscription.remove();
-      Gyroscope.removeAllListeners();
+      console.log("Component unmounted.");
+      accelerometerSubscription.remove();
+      // stopAccelerometerTask();
     };
   }, []);
 
+  // useEffect(() => {
+  //   console.log("Background effect");
+
+  //   return () => {
+  //     TaskManager.unregisterTaskAsync(ACCELEROMETER_TASK_NAME);
+  //   };
+  // }, []);
+
   useEffect(() => {
-    if (acceleration > 0.18) {
-      console.log("firstfirst");
-      setTimer(5);
-      getUserLocation();
-      const isOnRoad = checkIfLocationOnRoad();
-      if (isOnRoad) {
-        setAccidentDetected(true);
-        console.log("Accident detected");
+    const checkAccidentDetection = async () => {
+      if (acceleration && acceleration > 0.12) {
+        await getUserLocation();
+        console.log("Got hit by something");
+        const isOnRoad = checkIfLocationOnRoad();
+        console.log("Location on road: ", isOnRoad);
+        if (isOnRoad === true) {
+          setAccidentDetected(true);
+          Accelerometer.removeAllListeners();
+          console.log("Accident detected");
+          setTimer(5);
+        }
       }
-    }
+    };
+    checkAccidentDetection();
   }, [acceleration]);
 
   useEffect(() => {
@@ -216,7 +279,7 @@ const Home = () => {
                 <Text>to Abord Sending</Text>
               </Text>
             </View>
-            <TouchableOpacity
+            <TouchableOpaciuty
               style={styles.cancelWarningButton}
               onPress={() => {
                 setCancelTimer(true);
@@ -224,7 +287,7 @@ const Home = () => {
               }}
             >
               <Text style={styles.popButtons}>CANCEL</Text>
-            </TouchableOpacity>
+            </TouchableOpaciuty>
           </View>
         </View>
       </Modal>

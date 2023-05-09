@@ -32,7 +32,7 @@
         "backgroundColor": "#FFFFFF"
       },
       "permissions": [
-        "GYROSCOPE"
+        "LOCATION_BACKGROUND"
       ]
     },
     "web": {
