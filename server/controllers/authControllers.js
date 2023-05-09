@@ -35,9 +35,7 @@ const loginuser = async (req, res) => {
   if (existinguser) {
     const validuser = await bcrypt.compare(password, existinguser.password);
     if (!validuser) {
-      res.status(400).json({
-        message: "Wrong Password",
-      });
+      return res.send("Wrong Password");
     } else {
       const token = jwt.sign(
         {
@@ -76,8 +74,9 @@ const getUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   const id = req.params.id;
+  console.log("id", id);
   const { _id, password } = req.body;
-  if (id === _id) {
+  // if (id === _id) {
     try {
       if (password) {
         const salt = await bcrypt.genSalt(10);
@@ -91,9 +90,9 @@ const updateUser = async (req, res) => {
     } catch (error) {
       res.status(500).json(error);
     }
-  } else {
-    res.status(403).json("Access Denied! you can only update your own profile");
-  }
+  // } else {
+  //   res.status(403).json("Access Denied! you can only update your own profile");
+  // }
 };
 
 module.exports = {

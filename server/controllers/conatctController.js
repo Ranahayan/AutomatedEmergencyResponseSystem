@@ -1,26 +1,22 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { Contact, validateContact } = require("../models/contact");
-const User = require("../models/userModel");
 
 const contact = require("../routes/contactRoutes");
 
 const addContact = async (req, res) => {
   const { error } = validateContact(req.body);
   if (error) return res.status(400).send(error.details[0].message);
-  const { userId, name, number, location, email } = req.body;
-  // const user = await User.findById(userId);
-  // if (!user) return res.status(400).send(error.details[0].message);
+  const { userId, name, number, address, email } = req.body;
   let newContact = await Contact.findOne({ email: req.body.email });
   if (newContact) return res.status(400).send("Contact already exists");
-  newContact = new Contact({ userId, name, number, location, email });
+  newContact = new Contact({ userId, name, number, address, email });
 
   try {
     await newContact.save();
   } catch (err) {
     return res.status(400).send(err.message);
   }
-  //   res.send(_.pick(newContact, ["_id", "name", "number"]));
   res.send(newContact);
 };
 
@@ -52,7 +48,8 @@ const deleteContact = async (req, res) => {
 };
 
 const getAllContacts = async (req, res) => {
-  const contacts = await Contact.find({});
+  const userId = req.params.id;
+  const contacts = await Contact.find({ userId: userId });
   res.send(contacts);
 };
 
@@ -60,5 +57,5 @@ module.exports = {
   addContact,
   editContact,
   deleteContact,
-  getAllContacts
+  getAllContacts,
 };

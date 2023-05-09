@@ -14,6 +14,9 @@ const userSchema = new mongoose.Schema({
   address: {
     type: String,
   },
+  gender: {
+    type: String,
+  },
   bloodGroup: {
     type: String,
   },

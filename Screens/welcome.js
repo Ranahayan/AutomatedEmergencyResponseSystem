@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   View,
   Text,
@@ -20,6 +20,8 @@ const Joi = require("joi-browser");
 // import colors from "../Colors/colors";
 import Register from "./Register";
 import axios from "axios";
+import { Data } from "../Context_api/Context";
+import { IP_ADDRESS } from "@env";
 const colors = {
   greyColor: "#474747",
   background: "#FBFBFB",
@@ -32,6 +34,12 @@ const Welcome = ({ navigation }) => {
   const [show, setShow] = useState(true);
   const [showpopup, setShowpopup] = useState(false);
   const [switchvalue, setSwitchvalue] = useState(false);
+  const [credentialsError, setCredentialsError] = useState(false);
+  const { setAccount } = useContext(Data);
+
+  useEffect(() => {
+    console.log("Ip", IP_ADDRESS);
+  }, []);
 
   const [data, setData] = useState({
     email: "",
@@ -52,13 +60,26 @@ const Welcome = ({ navigation }) => {
 
   const schema = Joi.object(conditions);
 
-  const submitUser = () => {
+  const submitUser = async () => {
     const user = {
       ...data,
     };
-    console.log("user");
-    console.log(user);
-    setShowpopup(!showpopup);
+    console.log("IP", IP_ADDRESS);
+    try {
+      let response = await axios.post(
+        `http://${IP_ADDRESS}:4000/auth/login`,
+        user
+      );
+      setAccount(response.data.existinguser);
+      {
+        response.data.existinguser
+          ? setShowpopup(!showpopup)
+          : setCredentialsError(true);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+
     // user.key =
     //   Math.random().toString(36).substring(2) +
     //   new Date().getTime().toString(36);
@@ -97,6 +118,7 @@ const Welcome = ({ navigation }) => {
     newData[name] = value;
     setData(newData);
     setErrors(newErrors);
+    setCredentialsError(false);
   };
 
   const handleOnSaveErrors = (value, name) => {
@@ -132,21 +154,6 @@ const Welcome = ({ navigation }) => {
       console.log(error.message);
       console.log("error");
     }
-  };
-
-  const loginSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      let response = await axios.post("http://10.5.29.136:4000/auth/login", {
-        email,
-        password,
-      });
-      console.log(response);
-    } catch (error) {
-      console.log("This eRROr", error.message);
-    }
-    console.log(showpopup);
-    setShowpopup(!showpopup);
   };
 
   const backToLogin = () => {
@@ -241,6 +248,11 @@ const Welcome = ({ navigation }) => {
                 ) : null}
               </View>
             </View>
+            {credentialsError ? (
+              <Text style={{ color: "red", marginTop: -5, marginBottom: -15 }}>
+                Invalid Credentials
+              </Text>
+            ) : null}
             <TouchableOpacity
               style={styles.accountActionButton}
               onPress={handleUser}

@@ -141,6 +141,9 @@ const Home = () => {
             Math.pow(accelerometerData.z, 2)
         );
         overallAcceleration = overallAcceleration / 9.8;
+        // console.log("AccelerometerData", overallAcceleration);
+        // setAcceleration(overallAcceleration);
+
         console.log("AccelerometerData", overallAcceleration);
         setAcceleration(overallAcceleration);
       }

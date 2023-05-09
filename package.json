@@ -28,6 +28,7 @@
     "react-native": "^0.70.8",
     "react-native-background-fetch": "^4.1.9",
     "react-native-background-timer": "^2.4.1",
+    "react-native-dotenv": "^3.4.8",
     "react-native-drawer": "^2.5.1",
     "react-native-gesture-handler": "~2.8.0",
     "react-native-joi": "^0.0.5",

@@ -20,7 +20,9 @@ import {
 } from "react-native-responsive-screen";
 import KeyBoardAvoidingWrapper from "../keyboardAvoidingWrapper";
 import colors from "../Colors/colors";
+import axios from "axios";
 const Joi = require("joi-browser");
+import { IP_ADDRESS } from "@env";
 
 const Register = ({
   accountActionButtonColor,
@@ -69,13 +71,21 @@ const Register = ({
 
   const schema = Joi.object(conditions);
 
-  const submitUser = () => {
+  const submitUser = async () => {
     const user = {
       ...data,
     };
-    console.log("user");
-
-    console.log(user);
+    console.log("New", user);
+    try {
+      let response = await axios.post(
+        `http://${IP_ADDRESS}:4000/auth/register`,
+        user
+      );
+      console.log(response.data);
+      backToLogin();
+    } catch (error) {
+      console.log(error);
+    }
     // user.key =
     //   Math.random().toString(36).substring(2) +
     //   new Date().getTime().toString(36);

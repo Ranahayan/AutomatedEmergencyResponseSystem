@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { useEffect, memo, useContext, useState } from "react";
 import colors from "../Colors/colors";
 import {
   View,
@@ -14,8 +14,27 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+import { Data } from "../Context_api/Context";
+import axios from "axios";
+import { IP_ADDRESS } from "@env";
 
-const Contact = ({ navigation, contacts, searchContactFlag }) => {
+const Contact = ({ navigation, searchContactFlag }) => {
+  const { account } = useContext(Data);
+  const [contacts, setContacts] = useState([]);
+  const getContacts = async () => {
+    try {
+      let response = await axios.get(
+        `http://${IP_ADDRESS}:4000/contact/${account._id}`
+      );
+      console.log("Response", response.data);
+      setContacts(response.data);
+    } catch (error) {
+      console.log("Error", error);
+    }
+  };
+  useEffect(() => {
+    getContacts();
+  }, []);
   const renderContact = ({ item }) => (
     <TouchableOpacity
       onPress={() => {

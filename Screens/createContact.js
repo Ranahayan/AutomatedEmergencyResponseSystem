@@ -1,4 +1,4 @@
-import React, { useEffect, useState, memo } from "react";
+import React, { useEffect, useState, memo, useContext } from "react";
 import colors from "../Colors/colors";
 import { Feather, Ionicons, AntDesign } from "@expo/vector-icons";
 import KeyBoardAvoidingWrapper from "../keyboardAvoidingWrapper";
@@ -15,11 +15,14 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+import { Data } from "../Context_api/Context";
+import axios from "axios";
+import { IP_ADDRESS } from "@env";
 
-const Joi = require('joi-browser');
-
+const Joi = require("joi-browser");
 
 const CreateContact = ({ navigation, handleAddContact }) => {
+  const { account } = useContext(Data);
   const [data, setData] = useState({
     name: "",
     number: "",
@@ -45,13 +48,20 @@ const CreateContact = ({ navigation, handleAddContact }) => {
 
   const schema = Joi.object(conditions);
 
-  const submitContact = () => {
+  const submitContact = async () => {
     const contact = {
       ...data,
     };
-    contact.key =
-      Math.random().toString(36).substring(2) +
-      new Date().getTime().toString(36);
+    contact.userId = account._id;
+    try {
+      let response = await axios.post(
+        `http://${IP_ADDRESS}:4000/contact/add`,
+        contact
+      );
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
     handleAddContact(contact);
     navigation.goBack("");
   };
