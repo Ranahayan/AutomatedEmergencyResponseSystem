@@ -1,4 +1,4 @@
-import React, { useEffect, useState, memo } from "react";
+import React, { useEffect, useState, memo, useContext } from "react";
 import colors from "../Colors/colors";
 import { Feather, Ionicons, AntDesign } from "@expo/vector-icons";
 import KeyBoardAvoidingWrapper from "../keyboardAvoidingWrapper";
@@ -15,12 +15,14 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+import axios from "axios";
+import { IP_ADDRESS } from "@env";
+import { Data } from "../Context_api/Context";
 const Joi = require("joi-browser");
 
 const IndividualContact = ({
   navigation,
   route,
-  contacts,
   editFlag,
   setEditFlag,
   handleEditContact,
@@ -31,9 +33,22 @@ const IndividualContact = ({
     address: "",
     email: "",
   });
+  const { account } = useContext(Data);
   const [errors, setErrors] = useState({});
   const { constactId } = route.params;
   const [edit, setEdit] = useState(false);
+  const [contacts, setContacts] = useState([]);
+  const getContacts = async () => {
+    try {
+      let response = await axios.get(
+        `http://${IP_ADDRESS}:4000/contact/${account._id}`
+      );
+      console.log("Response", response.data);
+      setContacts(response.data);
+    } catch (error) {
+      console.log("Error", error);
+    }
+  };
   useEffect(() => {
     console.log(constactId);
     const newContacts = [...contacts];
@@ -64,12 +79,13 @@ const IndividualContact = ({
   // ------------------------------------------------------Handling Validations------------------------------------------------------
   const schema = Joi.object(conditions);
 
-  const submitContact = () => {
+  const submitContact = async () => {
     const contact = {
       key: constactId,
       ...data,
     };
-    handleEditContact(constactId, contact);
+    console.log(contact);
+    // handleEditContact(constactId, contact);
     navigation.goBack("");
   };
 

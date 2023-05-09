@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 import colors from "../Colors/colors";
 import {
   View,
@@ -21,7 +21,9 @@ import {
   Entypo,
 } from "@expo/vector-icons";
 import KeyBoardAvoidingWrapper from "../keyboardAvoidingWrapper";
-
+import { Data } from "../Context_api/Context";
+import axios from "axios";
+import { IP_ADDRESS } from "@env";
 const Joi = require("joi-browser");
 
 const Profile = ({
@@ -32,6 +34,7 @@ const Profile = ({
   setUser,
 }) => {
   const inputElement = useRef(null);
+  const { account, setAccount } = useContext(Data);
   const [data, setData] = useState({
     name: "",
     address: "",
@@ -42,7 +45,13 @@ const Profile = ({
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    setData(user);
+    setData({
+      name: account.name,
+      address: account.address,
+      gender: account.gender,
+      bloodGroup: account.bloodGroup,
+      email: account.email,
+    });
   }, []);
 
   // ------------------------------------------------------Handling Validations------------------------------------------------------
@@ -62,11 +71,21 @@ const Profile = ({
 
   const schema = Joi.object(conditions);
 
-  const submitUser = () => {
+  const submitUser = async () => {
     const user = {
       ...data,
     };
-    setUser(user);
+    try {
+      console.log(user);
+      let response = await axios.put(
+        `http://${IP_ADDRESS}:4000/auth/updateUser/${account._id}`,
+        user
+      );
+      console.log("Respnose", response.data);
+      setAccount(response.data);
+    } catch (error) {
+      console.log("Error", error.message);
+    }
     setEditprofileFlag(false);
     navigation.goBack("");
   };
@@ -249,7 +268,10 @@ const Profile = ({
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.appButtonSave}
-                onPress={handleUser}
+                onPress={() => {
+                  console.log("save button is called");
+                  handleUser();
+                }}
               >
                 <Text style={styles.appInButtonSave}>Save</Text>
               </TouchableOpacity>

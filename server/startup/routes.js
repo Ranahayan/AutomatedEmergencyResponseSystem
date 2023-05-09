@@ -12,4 +12,3 @@ module.exports = function (app) {
   app.use("/api/contact", contactRoutes);
   app.use(handleUnknoiwnError);
 };
-

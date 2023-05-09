@@ -21,7 +21,7 @@ const contactSchema = new mongoose.Schema({
     required: true,
     match: /^[0-9]+$/,
   },
-  location: { type: String, minlength: 3, maxlength: 20, required: true },
+  address: { type: String, minlength: 3, maxlength: 20, required: true },
   email: {
     type: String,
     trim: true,
@@ -43,7 +43,7 @@ const validateContact = (user) => {
     number: Joi.string()
       .pattern(/^[0-9]{11}$/)
       .required(),
-    location: Joi.string().min(3).max(20).required(),
+    address: Joi.string().min(3).max(20).required(),
     email: Joi.string().email({
       minDomainSegments: 2,
       tlds: { allow: ["com", "net"] },

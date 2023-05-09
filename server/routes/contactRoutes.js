@@ -7,9 +7,9 @@ const {
   getAllContacts,
 } = require("../controllers/conatctController");
 
-contact.post("/", addContact);
+contact.post("/add", addContact);
 contact.put("/:id", editContact);
 contact.delete("/:id", deleteContact);
-contact.get("/", getAllContacts);
+contact.get("/:id", getAllContacts);
 
 module.exports = contact;
