@@ -32,7 +32,26 @@
         "backgroundColor": "#FFFFFF"
       },
       "permissions": [
-        "LOCATION_BACKGROUND"
+        "accelerometer"
+      ]
+    },
+    "permissions": [
+      "accelerometer"
+    ],
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "./Screens/home.js",
+          "config": {
+            "tasks": [
+              {
+                "taskName": "backgroundTask",
+                "taskType": "background",
+                "interval": 1
+              }
+            ]
+          }
+        }
       ]
     },
     "web": {

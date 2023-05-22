@@ -37,6 +37,7 @@ import Contact from "./Screens/contacts";
 import IndividualContact from "./Screens/individualContact";
 import CreateContact from "./Screens/createContact";
 import DataProvider from "./Context_api/Context";
+import * as Location from "expo-location";
 
 export default function App(props) {
   const [showSplashScreen, setShowSplashScreen] = useState(true);
@@ -45,6 +46,10 @@ export default function App(props) {
   const [searchContactFlag, setSearchContactFlag] = useState(false);
   const contactTitle = searchContactFlag ? "" : "Conatct";
   const [searchQuery, setSearchQuery] = useState("");
+  const [location, setLocation] = useState({
+    longitude: 74.35016962092465,
+    latitude: 31.578248288521614,
+  });
   const [contacts, setContacts] = useState([
     {
       key: 2,
@@ -83,13 +88,41 @@ export default function App(props) {
     }, 2000);
   }, []);
 
+  const getUserLocation = async () => {
+    try {
+      const backgroundPermission =
+        await Location.requestForegroundPermissionsAsync();
+      console.log("Background permission: ", backgroundPermission);
+      console.log("Getting location");
+      if (backgroundPermission.status === "granted") {
+        const currentLocationIs = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.High,
+          timeout: 20000,
+        });
+        console.log("current Location Is: ", currentLocationIs);
+        setLocation({
+          latitude: currentLocationIs.coords.latitude,
+          longitude: currentLocationIs.coords.longitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        });
+        console.log("location object is: ", location);
+      } else {
+        console.log("Foreground location permission not granted");
+      }
+    } catch (error) {
+      console.log(error.message);
+      console.log("Error while getting location");
+    }
+  };
+
   const handleSearchContact = (val) => {
-    const filterdContacts = contacts.filter((contact) =>
-      contact.name.toLocaleLowerCase().includes(val.toLocaleLowerCase())
-    );
-    console.log(filterdContacts);
+    // const filterdContacts = contacts.filter((contact) =>
+    //   contact.name.toLocaleLowerCase().includes(val.toLocaleLowerCase())
+    // );
+    // console.log(filterdContacts);
     setSearchQuery(val);
-    setFinalContactList(filterdContacts);
+    // setFinalContactList(filterdContacts);
   };
   const handleAddContact = (contact) => {
     const contactList = [...contacts, contact];
@@ -128,18 +161,22 @@ export default function App(props) {
           ) : null}
 
           {/* -----------------------------------------------------------Login/Welcome----------------------------------------------------------- */}
-          <Stack.Screen
-            name="Welcome"
-            component={Welcome}
-            options={{ headerShown: false }}
-          />
+          <Stack.Screen name="Welcome" options={{ headerShown: false }}>
+            {(props) => (
+              <Welcome {...props} getUserLocation={getUserLocation} />
+            )}
+          </Stack.Screen>
 
           {/* -----------------------------------------------------------Home----------------------------------------------------------- */}
-          <Stack.Screen
-            name="Home"
-            component={Home}
-            options={{ headerShown: false }}
-          />
+          <Stack.Screen name="Home" options={{ headerShown: false }}>
+            {(props) => (
+              <Home
+                {...props}
+                currentLocation={location}
+                getUserLocation={getUserLocation}
+              />
+            )}
+          </Stack.Screen>
 
           {/* -----------------------------------------------------------Profile----------------------------------------------------------- */}
 
@@ -268,6 +305,7 @@ export default function App(props) {
                 {...props}
                 // contacts={finalContactList}
                 searchContactFlag={searchContactFlag}
+                searchQuery={searchQuery}
               />
             )}
           </Stack.Screen>

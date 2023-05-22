@@ -1,4 +1,10 @@
-import React, { useEffect, memo, useContext, useState } from "react";
+import React, {
+  useEffect,
+  memo,
+  useContext,
+  useState,
+  useCallback,
+} from "react";
 import colors from "../Colors/colors";
 import {
   View,
@@ -17,28 +23,46 @@ import {
 import { Data } from "../Context_api/Context";
 import axios from "axios";
 import { IP_ADDRESS } from "@env";
+import { useFocusEffect } from "@react-navigation/native";
 
-const Contact = ({ navigation, searchContactFlag }) => {
+const Contact = ({ navigation, searchContactFlag, searchQuery }) => {
   const { account } = useContext(Data);
   const [contacts, setContacts] = useState([]);
   const getContacts = async () => {
     try {
       let response = await axios.get(
-        `http://${IP_ADDRESS}:4000/contact/${account._id}`
+        `http://192.168.8.158:8080/contact/${account._id}`
       );
-      console.log("Response", response.data);
       setContacts(response.data);
     } catch (error) {
       console.log("Error", error);
     }
   };
   useEffect(() => {
+    handleSearchContact(searchQuery);
+  }, [searchQuery]);
+  useEffect(() => {
     getContacts();
   }, []);
+
+  useFocusEffect(() => {
+    getContacts();
+  });
+  const handleSearchContact = (val) => {
+    console.log("val: ", val);
+    // const newContact = JSON.parse(contacts);
+    const newContact = [...contacts];
+    const filterdContacts = newContact.filter((contact) => {
+      contact.name.toLocaleLowerCase().includes(val.toLocaleLowerCase());
+    });
+    console.log("filterdContacts are: ", filterdContacts);
+    setContacts(filterdContacts);
+  };
+
   const renderContact = ({ item }) => (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate("Individual Contact", { constactId: item.key });
+        navigation.navigate("Individual Contact", { constactId: item._id });
       }}
     >
       <View style={styles.inputFields}>
@@ -118,7 +142,7 @@ const styles = StyleSheet.create({
   inputPlaceholder: {
     fontSize: 20,
     marginLeft: 5,
-    color: colors.grey,
+    color: "#000000",
     marginLeft: 10,
     fontWeight: "500",
   },
@@ -135,7 +159,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 24,
     fontWeight: "500",
-    color: colors.grey,
+    color: "#000000",
   },
   noResults: {
     flex: 1,

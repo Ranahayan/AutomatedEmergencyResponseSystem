@@ -5,38 +5,60 @@ import {
   StatusBar,
   ActivityIndicator,
   Modal,
-  AppState,
 } from "react-native";
 import { Ionicons, Entypo } from "@expo/vector-icons";
 import colors from "../Colors/colors";
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { Accelerometer, Gyroscope, DeviceMotion } from "expo-sensors";
+import { Accelerometer } from "expo-sensors";
 import * as Location from "expo-location";
 import MapView, { Marker } from "react-native-maps";
 import Drawer from "react-native-drawer";
 import DrawerContent from "./drawerContent";
 import styles from "./HomeStyle";
+import * as TaskManager from "expo-task-manager";
+import * as BackgroundFetch from "expo-background-fetch";
+import { firestore } from "../firebase";
+import { collection, addDoc, GeoPoint, Timestamp } from "firebase/firestore";
+import { Data } from "../Context_api/Context";
+
+const ACCELEROMETER_TASK_NAME = "accelerometerTask";
 const MapboxAccessToken =
   "pk.eyJ1IjoiaGF5YW4yMzciLCJhIjoiY2xoMzdjcWpkMTBvdDNkb2g5c2w2eWFwdyJ9.rrOhnjh45HPyEQ2c-jTISQ";
 
-import * as TaskManager from "expo-task-manager";
-const ACCELEROMETER_TASK_NAME = "accelerometerTask";
+TaskManager.defineTask("backgroundTask", async () => {
+  // console.log("hello g, kyaa hal ha");
+  // console.log(Accelerometer.isAvailableAsync());
+  // if (Accelerometer.isAvailableAsync()) {
+  //   const accelerometerData = await Accelerometer.getCurrentReading();
 
-TaskManager.defineTask(ACCELEROMETER_TASK_NAME, async ({ data, error }) => {
-  if (error) {
-    console.log("Accelerometer task encountered an error:", error);
-    return;
-  }
-  if (data) {
-    const { x, y, z } = data.accelerometerData;
-    let overallAcceleration =
-      Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2)) / 9.8;
-    console.log("AccelerometerData", overallAcceleration);
-  }
+  //   // Process the accelerometer data
+  //   console.log(accelerometerData);
+  // }
+
+  // Accelerometer.addListener((accelerometerData) => {
+  //   let overallAcceleration = Math.sqrt(
+  //     Math.pow(accelerometerData.x, 2) +
+  //       Math.pow(accelerometerData.y, 2) +
+  //       Math.pow(accelerometerData.z, 2)
+  //   );
+  //   overallAcceleration = overallAcceleration / 9.8;
+  //   console.log("AccelerometerData", overallAcceleration);
+  // });
+
+  // return BackgroundFetch.Result.NewData;
+  // const now = Date.now();
+
+  // console.log(
+  //   `Got background fetch call at date: ${new Date(now).toISOString()}`
+  // );
+
+  // // Be sure to return the successful result type!
+
+  return BackgroundFetch.BackgroundFetchResult.NewData;
 });
 
-const Home = () => {
+const Home = ({ currentLocation, getUserLocation }) => {
   const navigation = useNavigation();
   const [loader, setLoader] = useState(true);
   const [location, setLocation] = useState({
@@ -50,35 +72,54 @@ const Home = () => {
   const [accidentDetected, setAccidentDetected] = useState(false);
   const [timer, setTimer] = useState(0);
   const [cancelTimer, setCancelTimer] = useState(false);
+  const [highAcceleration, sethighAcceleration] = useState(false);
+  const accelerationDataRef = useRef([]);
+  const { account } = useContext(Data);
 
-  const getUserLocation = async () => {
-    try {
-      const backgroundPermission =
-        await Location.requestForegroundPermissionsAsync();
-      if (backgroundPermission.status === "granted") {
-        const currentLocation = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.High,
-          timeout: 20000,
-        });
-        console.log(currentLocation);
-        setLocation({
-          latitude: currentLocation.coords.latitude,
-          longitude: currentLocation.coords.longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        });
-        setLoader(false);
-      } else {
-        console.log("Foreground location permission not granted");
-      }
-    } catch (error) {
-      console.log(error.message);
-      console.log("Error while getting location");
-    }
-  };
+  // const handleBackgroundTask = async () => {
+  //   if (Accelerometer.isAvailableAsync()) {
+  //     const accelerometerData = await Accelerometer.getLatestUpdateAsync();
+
+  //     // Process the accelerometer data
+  //     console.log(accelerometerData);
+  //   }
+
+  //   return BackgroundFetch.Result.NewData;
+  // };
+
+  // const getUserLocation = async () => {
+  //   try {
+  //     const backgroundPermission =
+  //       await Location.requestForegroundPermissionsAsync();
+  //     console.log("Background permission: ", backgroundPermission);
+  //     if (backgroundPermission.status === "granted") {
+  //       console.log("got location in home");
+  //       const currentLocationIs = await Location.getCurrentPositionAsync({
+  //         accuracy: Location.Accuracy.High,
+  //         timeout: 20000,
+  //       });
+  //       console.log("current Location Is: ", currentLocationIs);
+  //       setLocation({
+  //         latitude: currentLocationIs.coords.latitude,
+  //         longitude: currentLocationIs.coords.longitude,
+  //         latitudeDelta: 0.0922,
+  //         longitudeDelta: 0.0421,
+  //       });
+  //       console.log("location object is: ", location);
+
+  //       setLoader(false);
+  //     } else {
+  //       console.log("Foreground location permission not granted");
+  //     }
+  //   } catch (error) {
+  //     console.log(error.message);
+  //     console.log("Error while getting location");
+  //   }
+  // };
 
   const checkIfLocationOnRoad = async () => {
     const url = `https://api.mapbox.com/matching/v5/mapbox/driving/${location.longitude},${location.latitude};${location.longitude},${location.latitude}?access_token=${MapboxAccessToken}`;
+    console.log("map box URL is: ", url);
     let isOnRoad = false;
     fetch(url)
       .then((response) => response.json())
@@ -90,7 +131,9 @@ const Home = () => {
           isOnRoad = true;
         }
       })
-      .catch((error) => {});
+      .catch((error) => {
+        console.log(error.message);
+      });
     return isOnRoad;
   };
 
@@ -108,7 +151,7 @@ const Home = () => {
           taskName: ACCELEROMETER_TASK_NAME,
           options: {
             accelerometerData: {},
-            interval: 1000,
+            interval: 100,
           },
         },
       ]);
@@ -127,12 +170,55 @@ const Home = () => {
     }
   };
 
+  const windowSize = 5; // Time window in seconds
+  let accelerationData = [];
+
+  // Register the background task
+  // useEffect(() => {
+  //   const registerBackgroundTask = async () => {
+  //     console.log("Register the background task");
+  //     try {
+  //       // TaskManager.defineTask(BACKGROUND_TASK_NAME, handleBackgroundTask);
+
+  //       await BackgroundFetch.registerTaskAsync("backgroundTask", {
+  //         minimumInterval: 1, // This should match the interval specified in app.json
+  //         stopOnTerminate: false, // android only,
+  //         startOnBoot: true, // android only
+  //       });
+
+  //       BackgroundFetch.setMinimumIntervalAsync(1); // This should match the interval specified in app.json
+  //     } catch (error) {
+  //       console.log("Background task registration error:", error);
+  //     }
+  //   };
+
+  //   registerBackgroundTask();
+  // }, []);
+  const sendMessageToFirestore = async () => {
+    try {
+      const docRef = await addDoc(collection(firestore, "messages"), {
+        bloodGroup: account.bloodGroup,
+        gender: account.gender,
+        name: account.name,
+        location: new GeoPoint(location.latitude, location.longitude),
+        createdAt: Timestamp.now(),
+      });
+      console.log("Document written with ID: ", docRef.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  };
+
   useEffect(() => {
-    console.log("First useEffect");
     if (accidentDetected) return;
-    getUserLocation();
-    startAccelerometerTask();
-    Accelerometer.setUpdateInterval(16);
+    console.log("location i got from welcome screen is", currentLocation);
+    setLocation(currentLocation);
+    console.log("location object is: ", location);
+    setLoader(false);
+
+    // getUserLocation();
+    // startAccelerometerTask();
+    // Accelerometer.setUpdateInterval(16);
     const accelerometerSubscription = Accelerometer.addListener(
       (accelerometerData) => {
         let overallAcceleration = Math.sqrt(
@@ -141,11 +227,20 @@ const Home = () => {
             Math.pow(accelerometerData.z, 2)
         );
         overallAcceleration = overallAcceleration / 9.8;
-        // console.log("AccelerometerData", overallAcceleration);
-        // setAcceleration(overallAcceleration);
-
         console.log("AccelerometerData", overallAcceleration);
         setAcceleration(overallAcceleration);
+        // if (highAcceleration) {
+        //   accelerationDataRef.current.push(acceleration);
+
+        //   if (accelerationDataRef.current.length > windowSize * 60) {
+        //     // Assuming accelerometer data is received every 100ms
+        //     accelerationDataRef.current.shift();
+        //     console.log(
+        //       "Commulative accelerometer data is: ",
+        //       accelerationData
+        //     );
+        //   }
+        // }
       }
     );
 
@@ -166,15 +261,19 @@ const Home = () => {
 
   useEffect(() => {
     const checkAccidentDetection = async () => {
-      if (acceleration && acceleration > 0.12) {
-        await getUserLocation();
-        console.log("Got hit by something");
-        const isOnRoad = checkIfLocationOnRoad();
-        console.log("Location on road: ", isOnRoad);
+      if (acceleration && acceleration > 0.12 && !highAcceleration) {
+        sethighAcceleration(true);
+        // await getUserLocation();
+        // console.log("Got hit by something");
+        // const isOnRoad = await checkIfLocationOnRoad();
+        const isOnRoad = true;
+
+        // console.log("Location on road: ", isOnRoad);
         if (isOnRoad === true) {
+          // const accelerationData = accelerationDataRef.current;
           setAccidentDetected(true);
-          Accelerometer.removeAllListeners();
           console.log("Accident detected");
+          console.log("Commulative accelerometer data is: ", accelerationData);
           setTimer(5);
         }
       }
@@ -185,20 +284,23 @@ const Home = () => {
   useEffect(() => {
     console.log("second");
 
-    setWarningAlert(true);
     let interval;
     if (timer > 0) {
+      setWarningAlert(true);
       interval = setInterval(() => {
         setTimer((prevTimer) => prevTimer - 1);
       }, 1000);
-    } else {
-      setConfirmation(false);
+    } else if (showWarningAert) {
+      clearInterval(interval);
+      setConfirmation(true);
       console.log(showConfirmation);
       setWarningAlert(false);
-      if (!cancelTimer && acceleration) {
-        console.log("csnace;");
-        setConfirmation(true);
-      }
+      sendMessageToFirestore();
+      Accelerometer.removeAllListeners();
+      // if (!cancelTimer && acceleration) {
+      //   console.log("csnace;");
+      //   setConfirmation(true);
+      // }
     }
     return () => {
       clearInterval(interval);
@@ -221,6 +323,7 @@ const Home = () => {
             styles={styles}
             changeDrawerState={changeDrawerState}
             navigation={navigation}
+            sendMessageToFirestore={sendMessageToFirestore}
           />
         }
         tapToClose={true}
@@ -282,15 +385,17 @@ const Home = () => {
                 <Text>to Abord Sending</Text>
               </Text>
             </View>
-            <TouchableOpaciuty
+            <TouchableOpacity
               style={styles.cancelWarningButton}
               onPress={() => {
                 setCancelTimer(true);
                 setTimer(0);
+                sethighAcceleration(!highAcceleration);
+                setWarningAlert(false);
               }}
             >
               <Text style={styles.popButtons}>CANCEL</Text>
-            </TouchableOpaciuty>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>

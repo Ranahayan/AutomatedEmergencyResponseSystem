@@ -41,23 +41,24 @@ const IndividualContact = ({
   const getContacts = async () => {
     try {
       let response = await axios.get(
-        `http://${IP_ADDRESS}:4000/contact/${account._id}`
+        `http://192.168.8.158:8080/contact/${account._id}`
       );
-      console.log("Response", response.data);
+      // console.log("Response of individual Contact: ", response.data);
       setContacts(response.data);
+      console.log("contact_id", constactId);
+      const newContacts = [...response.data];
+      const index = newContacts.findIndex(
+        (contact) => contact._id === constactId
+      );
+      let contact = { ...newContacts[index] };
+      delete contact.key;
+      setData(contact);
     } catch (error) {
       console.log("Error", error);
     }
   };
   useEffect(() => {
-    console.log(constactId);
-    const newContacts = [...contacts];
-    const index = newContacts.findIndex(
-      (contact) => contact.key === constactId
-    );
-    let contact = { ...newContacts[index] };
-    delete contact.key;
-    setData(contact);
+    getContacts();
   }, []);
   useEffect(() => {
     editFlag && setEdit(true);
@@ -65,6 +66,7 @@ const IndividualContact = ({
 
   const conditions = {
     name: Joi.string().min(3).required().label("Name"),
+
     number: Joi.string().min(11).max(11).required().label("Number"),
     address: Joi.string().min(5).required().label("Address"),
     email: Joi.string()
@@ -80,26 +82,38 @@ const IndividualContact = ({
   const schema = Joi.object(conditions);
 
   const submitContact = async () => {
-    const contact = {
-      key: constactId,
-      ...data,
-    };
-    console.log(contact);
+    // const contact = {
+    //   key: constactId,
+    //   ...data,
+    // };
+    const { __v, _id, ...newObject } = data;
+    console.log(newObject);
+    console.log("indivdual contact: ", newObject);
     // handleEditContact(constactId, contact);
-    navigation.goBack("");
+
+    try {
+      let response = await axios.put(
+        `http://192.168.8.158:8080/contact/${data._id}`,
+        newObject
+      );
+      navigation.goBack("");
+    } catch (error) {
+      console.log("Error", error);
+    }
   };
 
   const handleContact = () => {
     const errors = handleErrors();
+    console.log(errors);
     setErrors(errors || {});
     if (errors) return;
     submitContact();
   };
 
   const handleErrors = () => {
-    const contact = {
-      ...data,
-    };
+    const { __v, _id, userId, ...contact } = data;
+
+    console.log("first: ", contact);
     const { error } = schema.validate(contact, {
       abortEarly: false,
     });
@@ -286,7 +300,7 @@ const styles = StyleSheet.create({
   inputPlaceholder: {
     fontSize: 18,
     marginLeft: 5,
-    color: colors.grey,
+    color: "#000000",
     width: wp("72%"),
   },
   icon: {

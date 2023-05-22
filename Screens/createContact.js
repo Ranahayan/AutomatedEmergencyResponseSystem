@@ -55,14 +55,14 @@ const CreateContact = ({ navigation, handleAddContact }) => {
     contact.userId = account._id;
     try {
       let response = await axios.post(
-        `http://${IP_ADDRESS}:4000/contact/add`,
+        "http://192.168.8.158:8080/contact/add",
         contact
       );
       console.log(response.data);
     } catch (error) {
       console.log(error);
     }
-    handleAddContact(contact);
+    // handleAddContact(contact);
     navigation.goBack("");
   };
 

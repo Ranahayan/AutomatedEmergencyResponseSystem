@@ -18,6 +18,7 @@ export default function DrawerContent({
   styles,
   changeDrawerState,
   navigation,
+  sendMessageToFirestore,
 }) {
   return (
     <View style={thisStyles.container}>
@@ -67,7 +68,10 @@ export default function DrawerContent({
             </TouchableOpacity>
           </View>
           <View style={styles.parentIndividulFeild}>
-            <TouchableOpacity style={styles.inputFields}>
+            <TouchableOpacity
+              style={styles.inputFields}
+              onPress={sendMessageToFirestore}
+            >
               <View style={styles.icon}>
                 <FontAwesome5 name="ambulance" size={21} color={colors.grey} />
               </View>
@@ -80,7 +84,10 @@ export default function DrawerContent({
             </TouchableOpacity>
           </View>
           <View style={styles.parentIndividulFeild}>
-            <TouchableOpacity style={styles.inputFields}>
+            <TouchableOpacity
+              style={styles.inputFields}
+              onPress={sendMessageToFirestore}
+            >
               <View style={styles.icon}>
                 <SimpleLineIcons name="logout" size={22} color={colors.grey} />
               </View>

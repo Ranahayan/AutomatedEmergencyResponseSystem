@@ -15,20 +15,20 @@ import {
 } from "react-native-responsive-screen";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import KeyBoardAvoidingWrapper from "../keyboardAvoidingWrapper";
-import * as Location from "expo-location";
 const Joi = require("joi-browser");
 // import colors from "../Colors/colors";
 import Register from "./Register";
 import axios from "axios";
 import { Data } from "../Context_api/Context";
 import { IP_ADDRESS } from "@env";
+// import * as Location from "expo-location";
 const colors = {
   greyColor: "#474747",
   background: "#FBFBFB",
   blueColor: "#0165FF",
 };
 
-const Welcome = ({ navigation }) => {
+const Welcome = ({ navigation, getUserLocation }) => {
   const [login, setlogin] = useState(true);
   const [signup, setsignup] = useState(false);
   const [show, setShow] = useState(true);
@@ -38,6 +38,7 @@ const Welcome = ({ navigation }) => {
   const { setAccount } = useContext(Data);
 
   useEffect(() => {
+    getUserLocation();
     console.log("Ip", IP_ADDRESS);
   }, []);
 
@@ -65,9 +66,12 @@ const Welcome = ({ navigation }) => {
       ...data,
     };
     console.log("IP", IP_ADDRESS);
+    let api = `http://${IP_ADDRESS}:4000/auth/login`;
+    console.log("Api URL", api);
+    let finalAPI = String(api);
     try {
       let response = await axios.post(
-        `http://${IP_ADDRESS}:4000/auth/login`,
+        "http://192.168.8.158:8080/auth/login",
         user
       );
       setAccount(response.data.existinguser);
@@ -79,12 +83,6 @@ const Welcome = ({ navigation }) => {
     } catch (error) {
       console.log(error.message);
     }
-
-    // user.key =
-    //   Math.random().toString(36).substring(2) +
-    //   new Date().getTime().toString(36);
-    // handleAddUser(user);
-    // navigation.goBack("");
   };
 
   const handleUser = () => {
