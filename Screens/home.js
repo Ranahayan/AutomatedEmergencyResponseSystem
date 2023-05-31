@@ -76,47 +76,6 @@ const Home = ({ currentLocation, getUserLocation }) => {
   const accelerationDataRef = useRef([]);
   const { account } = useContext(Data);
 
-  // const handleBackgroundTask = async () => {
-  //   if (Accelerometer.isAvailableAsync()) {
-  //     const accelerometerData = await Accelerometer.getLatestUpdateAsync();
-
-  //     // Process the accelerometer data
-  //     console.log(accelerometerData);
-  //   }
-
-  //   return BackgroundFetch.Result.NewData;
-  // };
-
-  // const getUserLocation = async () => {
-  //   try {
-  //     const backgroundPermission =
-  //       await Location.requestForegroundPermissionsAsync();
-  //     console.log("Background permission: ", backgroundPermission);
-  //     if (backgroundPermission.status === "granted") {
-  //       console.log("got location in home");
-  //       const currentLocationIs = await Location.getCurrentPositionAsync({
-  //         accuracy: Location.Accuracy.High,
-  //         timeout: 20000,
-  //       });
-  //       console.log("current Location Is: ", currentLocationIs);
-  //       setLocation({
-  //         latitude: currentLocationIs.coords.latitude,
-  //         longitude: currentLocationIs.coords.longitude,
-  //         latitudeDelta: 0.0922,
-  //         longitudeDelta: 0.0421,
-  //       });
-  //       console.log("location object is: ", location);
-
-  //       setLoader(false);
-  //     } else {
-  //       console.log("Foreground location permission not granted");
-  //     }
-  //   } catch (error) {
-  //     console.log(error.message);
-  //     console.log("Error while getting location");
-  //   }
-  // };
-
   const checkIfLocationOnRoad = async () => {
     const url = `https://api.mapbox.com/matching/v5/mapbox/driving/${location.longitude},${location.latitude};${location.longitude},${location.latitude}?access_token=${MapboxAccessToken}`;
     console.log("map box URL is: ", url);
@@ -124,7 +83,6 @@ const Home = ({ currentLocation, getUserLocation }) => {
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
-        // Check if user is on the road
         console.log("data recieved is: ", data);
         console.log(data);
         if (data.code === "Ok") {
@@ -172,28 +130,6 @@ const Home = ({ currentLocation, getUserLocation }) => {
 
   const windowSize = 5; // Time window in seconds
   let accelerationData = [];
-
-  // Register the background task
-  // useEffect(() => {
-  //   const registerBackgroundTask = async () => {
-  //     console.log("Register the background task");
-  //     try {
-  //       // TaskManager.defineTask(BACKGROUND_TASK_NAME, handleBackgroundTask);
-
-  //       await BackgroundFetch.registerTaskAsync("backgroundTask", {
-  //         minimumInterval: 1, // This should match the interval specified in app.json
-  //         stopOnTerminate: false, // android only,
-  //         startOnBoot: true, // android only
-  //       });
-
-  //       BackgroundFetch.setMinimumIntervalAsync(1); // This should match the interval specified in app.json
-  //     } catch (error) {
-  //       console.log("Background task registration error:", error);
-  //     }
-  //   };
-
-  //   registerBackgroundTask();
-  // }, []);
   const sendMessageToFirestore = async () => {
     try {
       const docRef = await addDoc(collection(firestore, "messages"), {
@@ -215,10 +151,6 @@ const Home = ({ currentLocation, getUserLocation }) => {
     setLocation(currentLocation);
     console.log("location object is: ", location);
     setLoader(false);
-
-    // getUserLocation();
-    // startAccelerometerTask();
-    // Accelerometer.setUpdateInterval(16);
     const accelerometerSubscription = Accelerometer.addListener(
       (accelerometerData) => {
         let overallAcceleration = Math.sqrt(
@@ -229,52 +161,27 @@ const Home = ({ currentLocation, getUserLocation }) => {
         overallAcceleration = overallAcceleration / 9.8;
         console.log("AccelerometerData", overallAcceleration);
         setAcceleration(overallAcceleration);
-        // if (highAcceleration) {
-        //   accelerationDataRef.current.push(acceleration);
-
-        //   if (accelerationDataRef.current.length > windowSize * 60) {
-        //     // Assuming accelerometer data is received every 100ms
-        //     accelerationDataRef.current.shift();
-        //     console.log(
-        //       "Commulative accelerometer data is: ",
-        //       accelerationData
-        //     );
-        //   }
-        // }
       }
     );
 
     return () => {
       console.log("Component unmounted.");
       accelerometerSubscription.remove();
-      // stopAccelerometerTask();
     };
   }, []);
-
-  // useEffect(() => {
-  //   console.log("Background effect");
-
-  //   return () => {
-  //     TaskManager.unregisterTaskAsync(ACCELEROMETER_TASK_NAME);
-  //   };
-  // }, []);
 
   useEffect(() => {
     const checkAccidentDetection = async () => {
       if (acceleration && acceleration > 0.12 && !highAcceleration) {
         sethighAcceleration(true);
-        // await getUserLocation();
-        // console.log("Got hit by something");
-        // const isOnRoad = await checkIfLocationOnRoad();
-        const isOnRoad = true;
-
-        // console.log("Location on road: ", isOnRoad);
+        await getUserLocation();
+        console.log("Got hit by something");
+        const isOnRoad = await checkIfLocationOnRoad();
         if (isOnRoad === true) {
-          // const accelerationData = accelerationDataRef.current;
           setAccidentDetected(true);
           console.log("Accident detected");
           console.log("Commulative accelerometer data is: ", accelerationData);
-          setTimer(5);
+          setTimer(10);
         }
       }
     };
@@ -297,10 +204,6 @@ const Home = ({ currentLocation, getUserLocation }) => {
       setWarningAlert(false);
       sendMessageToFirestore();
       Accelerometer.removeAllListeners();
-      // if (!cancelTimer && acceleration) {
-      //   console.log("csnace;");
-      //   setConfirmation(true);
-      // }
     }
     return () => {
       clearInterval(interval);

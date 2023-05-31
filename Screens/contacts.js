@@ -31,7 +31,7 @@ const Contact = ({ navigation, searchContactFlag, searchQuery }) => {
   const getContacts = async () => {
     try {
       let response = await axios.get(
-        `http://192.168.8.158:8080/contact/${account._id}`
+        `http://192.168.150.158:8080/contact/${account._id}`
       );
       setContacts(response.data);
     } catch (error) {

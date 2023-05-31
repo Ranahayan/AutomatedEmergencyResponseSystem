@@ -78,7 +78,7 @@ const Profile = ({
     try {
       console.log(user);
       let response = await axios.put(
-        `http://192.168.8.158:8080/auth/updateUser/${account._id}`,
+        `http://192.168.150.158:8080/auth/updateUser/${account._id}`,
         user
       );
       console.log("Respnose", response.data);

@@ -78,7 +78,7 @@ const Register = ({
     console.log("New", user);
     try {
       let response = await axios.post(
-        "http://192.168.8.158:8080/auth/register",
+        "http://192.168.150.158:8080/auth/register",
         user
       );
       console.log(response.data);

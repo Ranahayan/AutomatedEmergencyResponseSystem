@@ -41,7 +41,7 @@ const IndividualContact = ({
   const getContacts = async () => {
     try {
       let response = await axios.get(
-        `http://192.168.8.158:8080/contact/${account._id}`
+        `http://192.168.150.158:8080/contact/${account._id}`
       );
       // console.log("Response of individual Contact: ", response.data);
       setContacts(response.data);
@@ -93,7 +93,7 @@ const IndividualContact = ({
 
     try {
       let response = await axios.put(
-        `http://192.168.8.158:8080/contact/${data._id}`,
+        `http://192.168.150.158:8080/contact/${data._id}`,
         newObject
       );
       navigation.goBack("");

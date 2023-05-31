@@ -71,7 +71,7 @@ const Welcome = ({ navigation, getUserLocation }) => {
     let finalAPI = String(api);
     try {
       let response = await axios.post(
-        "http://192.168.8.158:8080/auth/login",
+        "http://192.168.150.158:8080/auth/login",
         user
       );
       setAccount(response.data.existinguser);
